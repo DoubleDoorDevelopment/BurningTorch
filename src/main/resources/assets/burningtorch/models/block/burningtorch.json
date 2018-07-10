@@ -1,0 +1,12 @@
+{
+  "parent": "block/torch",
+  "textures": {
+    "particle": "burningtorch:block/burningtorch",
+    "down": "burningtorch:block/burningtorch",
+    "up": "burningtorch:block/burningtorch",
+    "east": "burningtorch:block/burningtorch",
+    "west": "burningtorch:block/burningtorch",
+    "north": "burningtorch:block/burningtorch",
+    "south": "burningtorch:block/burningtorch"
+  }
+}
