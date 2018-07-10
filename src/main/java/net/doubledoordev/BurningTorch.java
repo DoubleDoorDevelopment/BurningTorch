@@ -4,6 +4,7 @@ import net.doubledoordev.Blocks.BurningTorchBase;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -69,7 +70,7 @@ public class BurningTorch
     @GameRegistry.ObjectHolder(MOD_ID)
     public static class Blocks
     {
-      public static final BurningTorchBase torch = new BurningTorchBase(Material.WOOD);
+      public static final BurningTorchBase torch = null;
     }
 
     /**
@@ -99,7 +100,7 @@ public class BurningTorch
         @SubscribeEvent
         public static void addBlocks(RegistryEvent.Register<Block> event)
         {
-           event.getRegistry().register(Blocks.torch);
+           event.getRegistry().register(new BurningTorchBase(Material.WOOD));
         }
 
         /**
@@ -108,13 +109,14 @@ public class BurningTorch
         @SubscribeEvent
         public static void addItems(RegistryEvent.Register<Item> event)
         {
-           event.getRegistry().register(new ItemBlock(Blocks.torch).setRegistryName(Blocks.torch.getUnlocalizedName()));
+           event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID + "burningtorch")).setRegistryName(Blocks.torch.getRegistryName()));
         }
     }
 
     @SubscribeEvent
     public static void registerRenders(ModelRegistryEvent event) {
         registerRender(Item.getItemFromBlock(Blocks.torch));
+        ModelLoader.setCustomStateMapper(Blocks.torch, new StateMap.Builder().build());
     }
 
     public static void registerRender(Item item) {
