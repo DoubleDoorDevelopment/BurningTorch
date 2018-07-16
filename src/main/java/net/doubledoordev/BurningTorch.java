@@ -1,6 +1,7 @@
 package net.doubledoordev;
 
 import net.doubledoordev.Blocks.BurningTorchBase;
+import net.doubledoordev.TileEntities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -9,13 +10,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.event.RegistryEvent;
 
 @Mod(
         modid = BurningTorch.MOD_ID,
@@ -42,7 +43,7 @@ public class BurningTorch
     @Mod.EventHandler
     public void preinit(FMLPreInitializationEvent event)
     {
-
+        GameRegistry.registerTileEntity(TorchTE.class, MOD_ID +":torchte");
     }
 
     /**
@@ -109,17 +110,15 @@ public class BurningTorch
         @SubscribeEvent
         public static void addItems(RegistryEvent.Register<Item> event)
         {
-           event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID + "burningtorch")).setRegistryName(Blocks.torch.getRegistryName()));
+           event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID + ":burningtorch")).setRegistryName(MOD_ID + ":burningtorch"));
+           event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID+ ":shit")).setRegistryName(MOD_ID+":shit"));
         }
     }
 
     @SubscribeEvent
-    public static void registerRenders(ModelRegistryEvent event) {
-        registerRender(Item.getItemFromBlock(Blocks.torch));
-        ModelLoader.setCustomStateMapper(Blocks.torch, new StateMap.Builder().build());
-    }
-
-    public static void registerRender(Item item) {
-        ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation( item.getRegistryName(), "inventory"));
+    public static void registerRenders(ModelRegistryEvent event)
+    {
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(Block.getBlockFromName(MOD_ID + ":burningtorch")), 0, new ModelResourceLocation(MOD_ID + ":burningtorch"));
+        ModelLoader.setCustomStateMapper(Block.getBlockFromName(MOD_ID + ":burningtorch"), new StateMap.Builder().build());
     }
 }

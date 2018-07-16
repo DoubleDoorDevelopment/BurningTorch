@@ -1,5 +1,6 @@
 package net.doubledoordev.TileEntities;
 
+import net.doubledoordev.Blocks.BurningTorchBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
@@ -32,7 +33,8 @@ public class TorchTE extends TileEntity implements ITickable
 
         if (timer > 40)
         {
-            timer = 0;
+
+            BurningTorchBase.setState(this.world, this.pos);
             markDirty();
         }
 
