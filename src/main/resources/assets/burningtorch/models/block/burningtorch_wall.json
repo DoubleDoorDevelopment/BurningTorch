@@ -1,5 +1,5 @@
 {
-  "parent": "block/torch_wall",
+  "parent": "burningtorch:block/longtorch_wall",
   "textures": {
     "torch": "burningtorch:blocks/burningtorch"
   }

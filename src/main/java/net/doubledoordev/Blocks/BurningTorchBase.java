@@ -5,6 +5,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -32,8 +33,9 @@ import static net.doubledoordev.BurningTorch.MOD_ID;
 
 public class BurningTorchBase extends Block
 {
-    static final PropertyDirection DIRECTION = PropertyDirection.create("direction");
-    static final PropertyBool LIT = PropertyBool.create("lit");
+    public static final PropertyDirection DIRECTION = PropertyDirection.create("direction");
+    public static final PropertyBool LIT = PropertyBool.create("lit");
+    public static final PropertyInteger DECAY = PropertyInteger.create("decay",0, 5);
     //TODO: Clean up the bounding boxes more as some are a bit goofy.
     private static final AxisAlignedBB STANDING_AABB = new AxisAlignedBB(     0.4000000059604645D, 0.0D,                 0.4000000059604645D, 0.6000000238418579D,  0.8000000238418579D, 0.6000000238418579D);
     private static final AxisAlignedBB TORCH_NORTH_AABB = new AxisAlignedBB(  0.3499999940395355D, 0.20000000298023224D, 0.599999988079071D,  0.599999761581421D,   1.000100011920929D,  1.0D);
@@ -41,16 +43,15 @@ public class BurningTorchBase extends Block
     private static final AxisAlignedBB TORCH_WEST_AABB = new AxisAlignedBB(   0.599999988079071D,  0.20000000298023224D, 0.3499999940395355D, 1.0D,                 1.000100011920929D,  0.6499999761581421D);
     private static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(   0.0D,                0.20000000298023224D, 0.3499999940395355D, 0.40000001192092896D, 1.000100011920929D,  0.6499999761581421D);
 
-
-    //TODO: Decay is missing.
-    //TODO: Decay rendering is missing.
+    //TODO: Decay isn't saved in the TE.
+    //TODO: Decay wall rendering is missing.
     //TODO: Configs options are missing.
     //TODO: Torches when destroyed need to drop special stuff.
     //TODO: Adding burnables to the torch to add torch life needs to be done.
     public BurningTorchBase(Material materialIn)
     {
         super(materialIn);
-        this.setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP));
+        this.setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
         this.setLightLevel(0.9375f);
         this.setCreativeTab(CreativeTabs.DECORATIONS);
         this.setUnlocalizedName("burningtorch");
@@ -63,31 +64,13 @@ public class BurningTorchBase extends Block
     {
         if (playerIn.getHeldItemMainhand().getItem() == Items.FLINT_AND_STEEL || playerIn.getHeldItemOffhand().getItem() == Items.FLINT_AND_STEEL && !state.getValue(LIT))
         {
-            worldIn.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, state.getValue(DIRECTION)));
+            worldIn.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState()
+                    .withProperty(LIT, true)
+                    .withProperty(DIRECTION, state.getValue(DIRECTION))
+                    .withProperty(DECAY, state.getValue(DECAY)));
             return true;
         }
         return false;
-    }
-
-    // State changes for things and stuff.
-    public static void setState(World worldin, BlockPos pos)
-    {
-        IBlockState state = worldin.getBlockState(pos);
-        TileEntity te = worldin.getTileEntity(pos);
-
-        // If the world is raining and the torch can see the sky we turn it off.
-        if (worldin.isRaining() && worldin.canBlockSeeSky(pos))
-        {
-            worldin.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState().withProperty(LIT, false).withProperty(DIRECTION, state.getValue(DIRECTION)));
-
-        }
-
-        // IDK what this does. It was in a tutorial.... Find out what it does.
-        if (te != null)
-        {
-            te.validate();
-            worldin.setTileEntity(pos, te);
-        }
     }
 
     // Changes the lighting level based off the LIT blockstate property.
@@ -153,7 +136,7 @@ public class BurningTorchBase extends Block
     @Override
     protected BlockStateContainer createBlockState()
     {
-        return new BlockStateContainer(this, DIRECTION, LIT);
+        return new BlockStateContainer(this, DIRECTION, LIT, DECAY);
     }
 
     // Does stuff....
@@ -229,9 +212,34 @@ public class BurningTorchBase extends Block
     {
         boolean lit = stateIn.getValue(LIT);
         EnumFacing enumfacing = stateIn.getValue(DIRECTION);
+        int decay = stateIn.getValue(DECAY);
+
         double d0 = (double)pos.getX() + 0.5D;
         double d1 = (double)pos.getY() + 0.9D;
         double d2 = (double)pos.getZ() + 0.5D;
+
+        switch (decay)
+        {
+            case 5:
+                d1 = (double)pos.getY() + 0.9D;
+                break;
+            case 4:
+                d1 = (double)pos.getY() + 0.85D;
+                break;
+            case 3:
+                d1 = (double)pos.getY() + 0.79D;
+                break;
+            case 2:
+                d1 = (double)pos.getY() + 0.70D;
+                break;
+            case 1:
+                d1 = (double)pos.getY() + 0.45D;
+                break;
+            case 0:
+                d1 = (double)pos.getY() + 0.35D;
+                break;
+
+        }
 
         if (lit)
         {
@@ -316,7 +324,343 @@ public class BurningTorchBase extends Block
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
-        return super.getActualState(state, worldIn, pos);
+        IBlockState blockState = state;
+
+        if (state.getValue(LIT))
+        {
+            switch (state.getValue(DECAY))
+            {
+                case 5:
+                switch (state.getValue(DIRECTION))
+                {
+                    case NORTH:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    case EAST:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    case WEST:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    case SOUTH:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    case UP:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    case DOWN:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                    default:
+                        blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 5);
+                        break;
+                }
+                break;
+
+                case 4:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 4);
+                            break;
+                    }
+                    break;
+
+                case 3:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 3);
+                            break;
+                    }
+                    break;
+
+                case 2:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 2);
+                            break;
+                    }
+                    break;
+
+                case 1:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 1);
+                            break;
+                    }
+                    break;
+
+                case 0:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, true).withProperty(DECAY, 0);
+                            break;
+                    }
+                    break;
+            }
+        }
+        else
+            switch (state.getValue(DECAY))
+            {
+                case 5:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 5);
+                            break;
+                    }
+                    break;
+
+                case 4:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 4);
+                            break;
+                    }
+                    break;
+
+                case 3:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 3);
+                            break;
+                    }
+                    break;
+
+                case 2:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 2);
+                            break;
+                    }
+                    break;
+
+                case 1:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 1);
+                            break;
+                    }
+                    break;
+
+                case 0:
+                    switch (state.getValue(DIRECTION))
+                    {
+                        case NORTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        case EAST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.EAST).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        case WEST:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.WEST).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        case SOUTH:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.SOUTH).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        case UP:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.UP).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        case DOWN:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.DOWN).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                        default:
+                            blockState = blockState.withProperty(DIRECTION, EnumFacing.NORTH).withProperty(LIT, false).withProperty(DECAY, 0);
+                            break;
+                    }
+                    break;
+            }
+
+        return blockState;
+
     }
 
     // Self explanatory.

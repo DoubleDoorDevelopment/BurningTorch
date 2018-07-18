@@ -111,7 +111,6 @@ public class BurningTorch
         public static void addItems(RegistryEvent.Register<Item> event)
         {
            event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID + ":burningtorch")).setRegistryName(MOD_ID + ":burningtorch"));
-           event.getRegistry().register(new ItemBlock(Block.getBlockFromName(MOD_ID+ ":shit")).setRegistryName(MOD_ID+":shit"));
         }
     }
 

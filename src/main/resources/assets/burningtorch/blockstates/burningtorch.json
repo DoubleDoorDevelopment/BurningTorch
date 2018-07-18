@@ -1,16 +1,46 @@
 {
   "forge_marker": 1,
   "variants": {
-    "direction=up,lit=true": { "model": "burningtorch:burningtorch" },
-    "direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
-    "direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
-    "direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
-    "direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+    "decay=5,direction=up,lit=true": { "model": "burningtorch:burningtorch" },
+    "decay=5,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=5,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=5,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=5,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
 
-    "direction=up,lit=false": { "model": "burningtorch:shit" },
-    "direction=east,lit=false": { "model": "burningtorch:burningtorch_wall" },
-    "direction=south,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 90 },
-    "direction=west,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 180 },
-    "direction=north,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 270 }
+    "decay=4,direction=up,lit=true": { "model": "burningtorch:burningtorch_4" },
+    "decay=4,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=4,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=4,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=4,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+
+    "decay=3,direction=up,lit=true": { "model": "burningtorch:burningtorch_3" },
+    "decay=3,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=3,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=3,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=3,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+
+    "decay=2,direction=up,lit=true": { "model": "burningtorch:burningtorch_2" },
+    "decay=2,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=2,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=2,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=2,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+
+    "decay=1,direction=up,lit=true": { "model": "burningtorch:burningtorch_1" },
+    "decay=1,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=1,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=1,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=1,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+
+    "decay=0,direction=up,lit=true": { "model": "burningtorch:burningtorch_0" },
+    "decay=0,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
+    "decay=0,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=0,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=0,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
+
+    "decay=5,direction=up,lit=false": { "model": "burningtorch:burningtorch" },
+    "decay=5,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall" },
+    "decay=5,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 90 },
+    "decay=5,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 180 },
+    "decay=5,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall", "y": 270 }
   }
 }
