@@ -1,5 +1,6 @@
 package net.doubledoordev.Blocks;
 
+import net.doubledoordev.ModConfig;
 import net.doubledoordev.TileEntities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -13,19 +14,20 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Random;
 
 import static net.doubledoordev.BurningTorch.MOD_ID;
@@ -36,18 +38,14 @@ public class BurningTorchBase extends Block
     public static final PropertyDirection DIRECTION = PropertyDirection.create("direction");
     public static final PropertyBool LIT = PropertyBool.create("lit");
     public static final PropertyInteger DECAY = PropertyInteger.create("decay",0, 5);
-    //TODO: Clean up the bounding boxes more as some are a bit goofy.
+
     private static final AxisAlignedBB STANDING_AABB = new AxisAlignedBB(     0.4000000059604645D, 0.0D,                 0.4000000059604645D, 0.6000000238418579D,  0.8000000238418579D, 0.6000000238418579D);
-    private static final AxisAlignedBB TORCH_NORTH_AABB = new AxisAlignedBB(  0.3499999940395355D, 0.20000000298023224D, 0.599999988079071D,  0.599999761581421D,   1.000100011920929D,  1.0D);
+    private static final AxisAlignedBB TORCH_NORTH_AABB = new AxisAlignedBB(  0.399999940395355D, 0.20000000298023224D, 0.599999988079071D,  0.599999761581421D,   1.000100011920929D,  1.0D);
     private static final AxisAlignedBB TORCH_SOUTH_AABB = new AxisAlignedBB(  0.3499999940395355D, 0.20000000298023224D, 0.0D,                0.6499999761581421D,  1.000100011920929D,  0.40000001192092896D);
     private static final AxisAlignedBB TORCH_WEST_AABB = new AxisAlignedBB(   0.599999988079071D,  0.20000000298023224D, 0.3499999940395355D, 1.0D,                 1.000100011920929D,  0.6499999761581421D);
     private static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(   0.0D,                0.20000000298023224D, 0.3499999940395355D, 0.40000001192092896D, 1.000100011920929D,  0.6499999761581421D);
 
-    //TODO: states doesnt sync.
-    //TODO: Decay wall rendering is missing.
-    //TODO: Configs options are missing.
     //TODO: Torches when destroyed need to drop special stuff.
-    //TODO: Adding burnables to the torch to add torch life needs to be done.
     public BurningTorchBase(Material materialIn)
     {
         super(materialIn);
@@ -58,28 +56,118 @@ public class BurningTorchBase extends Block
         this.setRegistryName(MOD_ID, "burningtorch");
     }
 
-    // Handles the relighting of torches.
+    // Handles the relighting of torches and a bunch of other stuff.
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
     {
-        if (playerIn.getHeldItemMainhand().getItem() == Items.FLINT_AND_STEEL || playerIn.getHeldItemOffhand().getItem() == Items.FLINT_AND_STEEL && !state.getValue(LIT))
+        TorchTE torchTE = (TorchTE) worldIn.getTileEntity(pos);
+
+        for (String item : ModConfig.relightingItems)
         {
-            worldIn.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState()
-                    .withProperty(LIT, true)
-                    .withProperty(DIRECTION, state.getValue(DIRECTION))
-                    .withProperty(DECAY, state.getValue(DECAY)));
-            return true;
+            if (playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || playerIn.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && !state.getValue(LIT))
+            {
+                worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(LIT, true));
+                return true;
+            }
         }
+
+        for (String item : ModConfig.extinguishingingItems)
+        {
+            if (playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || playerIn.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && state.getValue(LIT))
+            {
+                worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(LIT, false));
+                return true;
+            }
+        }
+
+            for (Map.Entry<String, Integer> entry : ModConfig.extendingingItems.entrySet())
+            {
+                if (playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals(entry.getKey()) /*|| playerIn.getHeldItemOffhand().getItem().getRegistryName().toString().equals(entry.getKey()) */ && torchTE.getDecayLevel() < 5)
+                {
+                    if (worldIn.getBlockState(pos).getBlock().getActualState(state, worldIn, pos).getValue(DECAY) + entry.getValue() > 5)
+                    {
+                        torchTE.setDecayLevel(5);
+                        playerIn.getHeldItemMainhand().setCount(playerIn.getHeldItemMainhand().getCount() - 1);
+                        return true;
+                    }
+                    else
+                    {
+                        torchTE.setDecayLevel(worldIn.getBlockState(pos).getBlock().getActualState(state, worldIn, pos).getValue(DECAY) + entry.getValue());
+                        playerIn.getHeldItemMainhand().setCount(playerIn.getHeldItemMainhand().getCount() - 1);
+                        return true;
+                    }
+                }
+        }
+
         return false;
+    }
+
+    @Override
+    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
+    {
+        super.breakBlock(worldIn, pos, state);
+        this.dropBlockAsItem(worldIn, pos, state, 0);
+    }
+
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+    {
+        TorchTE torchTE = (TorchTE) world.getTileEntity(pos);
+        //ArrayList<ItemStack> drop = new ArrayList<>();
+
+        System.out.print("\n get drops \n");
+        drops.add(new ItemStack(Items.STICK, 1));
+        switch (torchTE.getDecayLevel())
+        {
+            case 5:
+                drops.add(new ItemStack(Items.COAL, 8));
+                break;
+            case 4:
+                drops.add(new ItemStack(Items.CAKE, 6));
+                break;
+            case 3:
+                drops.add(new ItemStack(Items.CARROT, 4));
+                break;
+            case 2:
+                drops.add(new ItemStack(Items.CAULDRON, 2));
+                break;
+            case 1:
+                drops.add(new ItemStack(Items.CHAINMAIL_BOOTS, 1));
+                break;
+        }
     }
 
     // Changes the lighting level based off the LIT blockstate property.
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos)
     {
+        int decayLevel;
+        if (world.getTileEntity(pos) instanceof TorchTE)
+        {
+            TorchTE torchTE = (TorchTE) world.getTileEntity(pos);
+            decayLevel = torchTE.getDecayLevel();
+        }
+        else
+        {
+            decayLevel = 5;
+        }
+
         if (!state.getValue(LIT))
         {
-            return 0;
+            return ModConfig.lightLevelUnlitTorch;
+        }
+        switch (decayLevel)
+        {
+            case 5:
+                return ModConfig.lightLevel5;
+            case 4:
+                return ModConfig.lightLevel4;
+            case 3:
+                return ModConfig.lightLevel3;
+            case 2:
+                return ModConfig.lightLevel2;
+            case 1:
+                return ModConfig.lightLevel1;
         }
         return 14;
     }
@@ -194,6 +282,7 @@ public class BurningTorchBase extends Block
 
             if (flag)
             {
+                System.out.print("\n on neighbor change \n");
                 this.dropBlockAsItem(worldIn, pos, state, 0);
                 worldIn.setBlockToAir(pos);
                 return true;
@@ -206,13 +295,13 @@ public class BurningTorchBase extends Block
     }
 
     // Handles the effects on the top of the torch.
-    //TODO: Could use some perfecting on the wall torchs as its a weeeee bit off.
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
     {
+        TorchTE torchTE = (TorchTE) worldIn.getTileEntity(pos);
         boolean lit = stateIn.getValue(LIT);
         EnumFacing enumfacing = stateIn.getValue(DIRECTION);
-        int decay = stateIn.getValue(DECAY);
+        int decay = torchTE.getDecayLevel();
 
         double d0 = (double)pos.getX() + 0.5D;
         double d1 = (double)pos.getY() + 0.9D;
@@ -227,18 +316,17 @@ public class BurningTorchBase extends Block
                 d1 = (double)pos.getY() + 0.85D;
                 break;
             case 3:
-                d1 = (double)pos.getY() + 0.79D;
+                d1 = (double)pos.getY() + 0.75D;
                 break;
             case 2:
-                d1 = (double)pos.getY() + 0.70D;
+                d1 = (double)pos.getY() + 0.62D;
                 break;
             case 1:
-                d1 = (double)pos.getY() + 0.45D;
+                d1 = (double)pos.getY() + 0.44D;
                 break;
             case 0:
                 d1 = (double)pos.getY() + 0.35D;
                 break;
-
         }
 
         if (lit)
@@ -246,8 +334,34 @@ public class BurningTorchBase extends Block
             if (enumfacing.getAxis().isHorizontal())
             {
                 EnumFacing enumfacing1 = enumfacing.getOpposite();
-                worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.27D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.22D, d2 + 0.27D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
-                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.27D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.22D, d2 + 0.27D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                switch (decay)
+                {
+                    case 5:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.2D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.20D, d2 + 0.2D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.2D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.20D, d2 + 0.2D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 4:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.22D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.16D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.22D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.16D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 3:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.24D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.15D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.24D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.15D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 2:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.3D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.16D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.3D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.16D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 1:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 0:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.1D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.09D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.1D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.09D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        break;
+                }
+
             }
             else
             {
@@ -268,12 +382,37 @@ public class BurningTorchBase extends Block
         {
             if (worldIn.getBlockState(pos).getBlock() == this)
             {
+                System.out.print("\n check for drop \n");
                 this.dropBlockAsItem(worldIn, pos, state, 0);
                 worldIn.setBlockToAir(pos);
             }
 
             return false;
         }
+    }
+
+    public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
+    {
+        for (EnumFacing enumfacing : DIRECTION.getAllowedValues())
+        {
+            if (this.canPlaceAt(worldIn, pos, enumfacing))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Stops torches from being placed on their self.
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+    {
+        return BlockFaceShape.UNDEFINED;
+    }
+
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+    {
+        this.checkForDrop(worldIn, pos, state);
     }
 
     // Does stuff....
@@ -320,17 +459,27 @@ public class BurningTorchBase extends Block
         return true;
     }
 
-    //TODO: This will be used to handle the rendering for the decay levels
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
+        TileEntity tileentity = worldIn instanceof ChunkCache ? ((ChunkCache)worldIn).getTileEntity(pos, Chunk.EnumCreateEntityType.CHECK) : worldIn.getTileEntity(pos);
+        int decayLevel;
+        if (tileentity instanceof TorchTE)
+        {
+            TorchTE torchTE = (TorchTE) tileentity;
+            decayLevel = torchTE.getDecayLevel();
+        }
+        else
+            {
+                decayLevel = 0;
+            }
         IBlockState blockState = state;
 
         if (worldIn.getBlockState(pos).getBlock() == Block.getBlockFromName(MOD_ID + ":burningtorch"))
         {
             if (state.getValue(LIT))
             {
-                switch (state.getValue(DECAY))
+                switch (decayLevel)
                 {
                     case 5:
                         switch (state.getValue(DIRECTION))
@@ -496,7 +645,7 @@ public class BurningTorchBase extends Block
                 }
             }
             else
-                switch (state.getValue(DECAY))
+                switch (decayLevel)
                 {
                     case 5:
                         switch (state.getValue(DIRECTION))

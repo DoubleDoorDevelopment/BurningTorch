@@ -1,8 +1,9 @@
 package net.doubledoordev.TileEntities;
 
 import net.doubledoordev.Blocks.BurningTorchBase;
-import net.minecraft.block.Block;
+import net.doubledoordev.ModConfig;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -13,11 +14,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-import static net.doubledoordev.BurningTorch.MOD_ID;
-
 public class TorchTE extends TileEntity implements ITickable
 {
-    int decayLevel = 5;
+    int decayLevel = ModConfig.startingDecayLevel;
     int rainTimer;
     int decayTimer;
 
@@ -31,15 +30,13 @@ public class TorchTE extends TileEntity implements ITickable
     {
         super.readFromNBT(compound);
         decayLevel = compound.getInteger("decaylevel");
-        System.out.print("\nReading: "+ compound+"\n");
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
-        compound.setInteger("decaylevel", decayLevel); //this.world.getBlockState(pos).getValue(BurningTorchBase.DECAY));
-        System.out.print("\nWriting: "+ compound+"\n");
+        compound.setInteger("decaylevel", decayLevel);
         return compound;
     }
 
@@ -52,56 +49,59 @@ public class TorchTE extends TileEntity implements ITickable
     @Override
     public void update()
     {
-        if (this.world.getBlockState(pos).getBlock() == Block.getBlockFromName(MOD_ID + ":burningtorch"))
+        if (this.world.getBlockState(pos).getBlock() != Blocks.AIR)
         {
-            int decayLevelState = this.world.getBlockState(pos).getValue(BurningTorchBase.DECAY);
-
-            if (decayLevel > 0)
+            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BurningTorchBase.LIT))
             {
                 rainTimer++;
                 decayTimer++;
 
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-                if (rainTimer > 40)
+                if (rainTimer > ModConfig.rainUpdateRate && ModConfig.shouldRainExtinguish)
                 {
                     if (this.world.isRaining() && this.world.canBlockSeeSky(pos))
                     {
-                        this.world.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState()
-                                .withProperty(BurningTorchBase.LIT, false)
-                                .withProperty(BurningTorchBase.DIRECTION, this.world.getBlockState(pos).getValue(BurningTorchBase.DIRECTION))
-                                .withProperty(BurningTorchBase.DECAY, this.world.getBlockState(pos).getValue(BurningTorchBase.DECAY)));
-
+                        this.world.setBlockState(pos, world.getBlockState(pos)
+                                .withProperty(BurningTorchBase.LIT, false));
                         updateBlock();
                         rainTimer = 0;
                     }
                 }
 
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-                if (decayTimer > 200)
+                if (decayTimer > ModConfig.decayRate)
                 {
-                    if (this.world.getBlockState(pos).getValue(BurningTorchBase.LIT) && decayLevel > 0)
+                    if (/*this.world.getBlockState(pos).getValue(BurningTorchBase.LIT) && */ decayLevel > 0)
                     {
-                        /* this.world.setBlockState(pos, Block.getBlockFromName(MOD_ID + ":burningtorch").getDefaultState()
-                                .withProperty(BurningTorchBase.LIT, this.world.getBlockState(pos).getValue(BurningTorchBase.LIT))
-                                .withProperty(BurningTorchBase.DIRECTION, this.world.getBlockState(pos).getValue(BurningTorchBase.DIRECTION))
-                                .withProperty(BurningTorchBase.DECAY, --decayLevelState));
-                                */
-                        this.decayLevel = decayLevel-1;
-
-
+                        this.decayLevel = decayLevel - 1;
                         updateBlock();
                         decayTimer = 0;
                     }
                 }
             }
-            else
+            else if (decayLevel == 0)
             {
-                updateBlock();
                 this.world.removeTileEntity(pos);
                 this.world.setBlockToAir(pos);
                 decayTimer = 0;
             }
         }
+        else
+        {
+            this.world.removeTileEntity(pos);
+        }
+
+    }
+
+    public int getDecayLevel()
+    {
+        return this.decayLevel;
+    }
+
+    public void setDecayLevel(int decayLevel)
+    {
+        this.decayLevel = decayLevel;
+        updateBlock();
     }
 
     @Override
@@ -117,8 +117,8 @@ public class TorchTE extends TileEntity implements ITickable
 
     @Override
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
-        super.onDataPacket(net, pkt);
-        handleUpdateTag(pkt.getNbtCompound());
+        readFromNBT(pkt.getNbtCompound());
+        updateBlock();
     }
 
     private void updateBlock()
