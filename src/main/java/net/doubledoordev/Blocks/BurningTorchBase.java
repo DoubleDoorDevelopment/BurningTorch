@@ -16,7 +16,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
@@ -45,7 +48,7 @@ public class BurningTorchBase extends Block
     private static final AxisAlignedBB TORCH_WEST_AABB = new AxisAlignedBB(   0.599999988079071D,  0.20000000298023224D, 0.3499999940395355D, 1.0D,                 1.000100011920929D,  0.6499999761581421D);
     private static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(   0.0D,                0.20000000298023224D, 0.3499999940395355D, 0.40000001192092896D, 1.000100011920929D,  0.6499999761581421D);
 
-    //TODO: Torches when destroyed need to drop special stuff.
+    //TODO: Torches when destroyed need to drop special stuff correctly...
     public BurningTorchBase(Material materialIn)
     {
         super(materialIn);
@@ -102,41 +105,76 @@ public class BurningTorchBase extends Block
         return false;
     }
 
-    @Override
-    public void breakBlock(World worldIn, BlockPos pos, IBlockState state)
-    {
-        super.breakBlock(worldIn, pos, state);
-        this.dropBlockAsItem(worldIn, pos, state, 0);
-    }
-
+    /*
     @Override
     public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
+
         TorchTE torchTE = (TorchTE) world.getTileEntity(pos);
-        //ArrayList<ItemStack> drop = new ArrayList<>();
-
-        System.out.print("\n get drops \n");
-        drops.add(new ItemStack(Items.STICK, 1));
-        switch (torchTE.getDecayLevel())
-        {
-            case 5:
-                drops.add(new ItemStack(Items.COAL, 8));
-                break;
-            case 4:
-                drops.add(new ItemStack(Items.CAKE, 6));
-                break;
-            case 3:
-                drops.add(new ItemStack(Items.CARROT, 4));
-                break;
-            case 2:
-                drops.add(new ItemStack(Items.CAULDRON, 2));
-                break;
-            case 1:
-                drops.add(new ItemStack(Items.CHAINMAIL_BOOTS, 1));
-                break;
-        }
+        //if (te != null)
+        //{
+            //int decay = te.getDecayLevel();
+            System.out.print("\n STATE:" + getActualState(state, world, pos).getValue(DECAY) + " \n");
+            switch (getActualState(state, world, pos).getValue(DECAY))
+            {
+                case 5:
+                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                    {
+                        Item item = Item.getByNameOrId(entry.getKey());
+                        drops.add(new ItemStack(item, entry.getValue()));
+                    }
+                    break;
+                case 4:
+                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                    {
+                        Item item = Item.getByNameOrId(entry.getKey());
+                        int quantity = entry.getValue();
+                        if (entry.getValue() > 9)
+                        {
+                            quantity = entry.getValue() - 3;
+                        }
+                        drops.add(new ItemStack(item, quantity));
+                    }
+                    break;
+                case 3:
+                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                    {
+                        Item item = Item.getByNameOrId(entry.getKey());
+                        int quantity = entry.getValue();
+                        if (entry.getValue() > 6)
+                        {
+                            quantity = entry.getValue() - 2;
+                        }
+                        drops.add(new ItemStack(item, quantity));
+                    }
+                    break;
+                case 2:
+                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                    {
+                        Item item = Item.getByNameOrId(entry.getKey());
+                        int quantity = entry.getValue();
+                        if (entry.getValue() > 3)
+                        {
+                            quantity = entry.getValue() - 1;
+                        }
+                        drops.add(new ItemStack(item, quantity));
+                    }
+                    break;
+                case 1:
+                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                    {
+                        Item item = Item.getByNameOrId(entry.getKey());
+                        int quantity = entry.getValue();
+                        if (entry.getValue() > 1)
+                        {
+                            quantity = entry.getValue() - 1;
+                        }
+                        drops.add(new ItemStack(item, quantity));
+                    }
+                    break;
+            }
     }
-
+*/
     // Changes the lighting level based off the LIT blockstate property.
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos)
@@ -282,7 +320,6 @@ public class BurningTorchBase extends Block
 
             if (flag)
             {
-                System.out.print("\n on neighbor change \n");
                 this.dropBlockAsItem(worldIn, pos, state, 0);
                 worldIn.setBlockToAir(pos);
                 return true;
@@ -382,8 +419,7 @@ public class BurningTorchBase extends Block
         {
             if (worldIn.getBlockState(pos).getBlock() == this)
             {
-                System.out.print("\n check for drop \n");
-                this.dropBlockAsItem(worldIn, pos, state, 0);
+                this.getItemDropped(state, null ,0);
                 worldIn.setBlockToAir(pos);
             }
 
@@ -929,5 +965,30 @@ public class BurningTorchBase extends Block
         return blockState;
     }
 
+    @Override
+    public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
+    {
+        drops.add(new ItemStack(Items.CAULDRON));
+        super.getDrops(drops, world, pos, state, fortune);
+        TorchTE te = world.getTileEntity(pos) instanceof TorchTE ? (TorchTE)world.getTileEntity(pos) : null;
+        if (te != null && te.getDrops() != null)
+            drops.addAll(te.getDrops());
+    }
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+        if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+    }
+    /**
+     * Spawns the block's drops in the world. By the time this is called the Block has possibly been set to air via
+     * Block.removedByPlayer
+     */
+    @Override
+    public void harvestBlock(World world, EntityPlayer player, BlockPos pos, IBlockState state, @Nullable TileEntity te, ItemStack tool)
+    {
+        super.harvestBlock(world, player, pos, state, te, tool);
+        world.setBlockToAir(pos);
+    }
 }
 

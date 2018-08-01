@@ -83,7 +83,7 @@ public class BurningTorch
     @GameRegistry.ObjectHolder(MOD_ID)
     public static class Items
     {
-      public static final ItemBlock burningtorchitem = null;
+      public static final ItemBlock burningtorch = null;
     }
 
     /**
@@ -115,8 +115,7 @@ public class BurningTorch
     @SubscribeEvent
     public static void registerRenders(ModelRegistryEvent event)
     {
-        //ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(Blocks.burningtorch), 0, new ModelResourceLocation(MOD_ID + ":burningtorch"));
-        ModelLoader.setCustomModelResourceLocation(Items.burningtorchitem, 0, new ModelResourceLocation(Blocks.burningtorch.getRegistryName(), "inventory"));
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(Blocks.burningtorch), 0, new ModelResourceLocation(Blocks.burningtorch.getRegistryName(), "inventory"));
         ModelLoader.setCustomStateMapper(Blocks.burningtorch, new StateMap.Builder().build());
     }
 }

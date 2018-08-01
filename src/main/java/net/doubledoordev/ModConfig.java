@@ -86,4 +86,14 @@ public class ModConfig
     @Config.RangeInt(min = 1, max = 5)
     public static int startingDecayLevel = 5;
 
+    @Config.LangKey("burningtorch.config.itemstoextend")
+    @Config.Comment("What is dropped when a torch is broke?")
+    public static final Map<String, Integer> drops = new HashMap<>();
+
+    static
+    {
+        drops.put("minecraft:coal", 9);
+        drops.put("minecraft:stick", 1);
+    }
+
 }
