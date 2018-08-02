@@ -87,13 +87,12 @@ public class ModConfig
     public static int startingDecayLevel = 5;
 
     @Config.LangKey("burningtorch.config.itemstoextend")
-    @Config.Comment("What is dropped when a torch is broke?")
+    @Config.Comment("What is dropped when a torch is broke? Set quantity to 9 for nugget based math.")
     public static final Map<String, Integer> drops = new HashMap<>();
 
     static
     {
         drops.put("minecraft:coal", 9);
-        drops.put("minecraft:stick", 1);
     }
 
 }

@@ -83,7 +83,6 @@ public class BurningTorch
     @GameRegistry.ObjectHolder(MOD_ID)
     public static class Items
     {
-      public static final ItemBlock burningtorch = null;
     }
 
     /**
@@ -107,7 +106,7 @@ public class BurningTorch
         @SubscribeEvent
         public static void addItems(RegistryEvent.Register<Item> event)
         {
-           event.getRegistry().register(new ItemBlock(Blocks.burningtorch).setRegistryName(MOD_ID + ":burningtorch"));
+           event.getRegistry().register(new ItemBlock(Blocks.burningtorch).setRegistryName(Blocks.burningtorch.getRegistryName()));
         }
     }
 

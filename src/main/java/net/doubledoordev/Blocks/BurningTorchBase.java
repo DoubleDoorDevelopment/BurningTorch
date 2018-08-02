@@ -13,7 +13,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.BlockRenderLayer;
@@ -105,76 +105,6 @@ public class BurningTorchBase extends Block
         return false;
     }
 
-    /*
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
-    {
-
-        TorchTE torchTE = (TorchTE) world.getTileEntity(pos);
-        //if (te != null)
-        //{
-            //int decay = te.getDecayLevel();
-            System.out.print("\n STATE:" + getActualState(state, world, pos).getValue(DECAY) + " \n");
-            switch (getActualState(state, world, pos).getValue(DECAY))
-            {
-                case 5:
-                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
-                    {
-                        Item item = Item.getByNameOrId(entry.getKey());
-                        drops.add(new ItemStack(item, entry.getValue()));
-                    }
-                    break;
-                case 4:
-                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
-                    {
-                        Item item = Item.getByNameOrId(entry.getKey());
-                        int quantity = entry.getValue();
-                        if (entry.getValue() > 9)
-                        {
-                            quantity = entry.getValue() - 3;
-                        }
-                        drops.add(new ItemStack(item, quantity));
-                    }
-                    break;
-                case 3:
-                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
-                    {
-                        Item item = Item.getByNameOrId(entry.getKey());
-                        int quantity = entry.getValue();
-                        if (entry.getValue() > 6)
-                        {
-                            quantity = entry.getValue() - 2;
-                        }
-                        drops.add(new ItemStack(item, quantity));
-                    }
-                    break;
-                case 2:
-                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
-                    {
-                        Item item = Item.getByNameOrId(entry.getKey());
-                        int quantity = entry.getValue();
-                        if (entry.getValue() > 3)
-                        {
-                            quantity = entry.getValue() - 1;
-                        }
-                        drops.add(new ItemStack(item, quantity));
-                    }
-                    break;
-                case 1:
-                    for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
-                    {
-                        Item item = Item.getByNameOrId(entry.getKey());
-                        int quantity = entry.getValue();
-                        if (entry.getValue() > 1)
-                        {
-                            quantity = entry.getValue() - 1;
-                        }
-                        drops.add(new ItemStack(item, quantity));
-                    }
-                    break;
-            }
-    }
-*/
     // Changes the lighting level based off the LIT blockstate property.
     @Override
     public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos)
@@ -511,7 +441,7 @@ public class BurningTorchBase extends Block
             }
         IBlockState blockState = state;
 
-        if (worldIn.getBlockState(pos).getBlock() == Block.getBlockFromName(MOD_ID + ":burningtorch"))
+        if (worldIn.getBlockState(pos).getBlock() == this)
         {
             if (state.getValue(LIT))
             {
@@ -968,12 +898,72 @@ public class BurningTorchBase extends Block
     @Override
     public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-        drops.add(new ItemStack(Items.CAULDRON));
-        super.getDrops(drops, world, pos, state, fortune);
-        TorchTE te = world.getTileEntity(pos) instanceof TorchTE ? (TorchTE)world.getTileEntity(pos) : null;
-        if (te != null && te.getDrops() != null)
-            drops.addAll(te.getDrops());
+        System.out.print("\n getDrops " + getActualState(state, world,pos));
+        switch (getActualState(state, world, pos).getValue(DECAY))
+        {
+            case 5:
+                for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                {
+                    Item item = Item.getByNameOrId(entry.getKey());
+                    int quantity = entry.getValue();
+                    if (entry.getValue() > 8)
+                    {
+                        quantity = entry.getValue() - 1;
+                    }
+                    drops.add(new ItemStack(item, quantity));
+                }
+                break;
+            case 4:
+                for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                {
+                    Item item = Item.getByNameOrId(entry.getKey());
+                    int quantity = entry.getValue();
+                    if (entry.getValue() > 8)
+                    {
+                        quantity = entry.getValue() - 3;
+                    }
+                    drops.add(new ItemStack(item, quantity));
+                }
+                break;
+            case 3:
+                for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                {
+                    Item item = Item.getByNameOrId(entry.getKey());
+                    int quantity = entry.getValue();
+                    if (entry.getValue() > 6)
+                    {
+                        quantity = entry.getValue() - 5;
+                    }
+                    drops.add(new ItemStack(item, quantity));
+                }
+                break;
+            case 2:
+                for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                {
+                    Item item = Item.getByNameOrId(entry.getKey());
+                    int quantity = entry.getValue();
+                    if (entry.getValue() > 3)
+                    {
+                        quantity = entry.getValue() - 6;
+                    }
+                    drops.add(new ItemStack(item, quantity));
+                }
+                break;
+            case 1:
+                for (Map.Entry<String, Integer> entry : ModConfig.drops.entrySet())
+                {
+                    Item item = Item.getByNameOrId(entry.getKey());
+                    int quantity = entry.getValue();
+                    if (entry.getValue() > 1)
+                    {
+                        quantity = entry.getValue() - 7;
+                    }
+                    drops.add(new ItemStack(item, quantity));
+                }
+                break;
+        }
     }
+
     @Override
     public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
     {
@@ -990,5 +980,29 @@ public class BurningTorchBase extends Block
         super.harvestBlock(world, player, pos, state, te, tool);
         world.setBlockToAir(pos);
     }
+
+    /*
+    @Override
+    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
+    {
+        System.out.print("\n RemovedByPlayer " + world+ " " + player + " " + pos + " " + state + " " + willHarvest + " " + getActualState(state, world,pos));
+
+        //if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
+        //return super.removedByPlayer(state, world, pos, player, willHarvest);
+        //boolean tmp = super.removedByPlayer(state, world, pos, player, willHarvest);
+        //System.out.print("\n" + tmp +"\n");
+        return super.removedByPlayer(state, world, pos, player, willHarvest);
+
+        /*
+        if (world.getBlockState(pos).getBlock() == this)
+        {
+            this.dropBlockAsItem(world, pos, state, 0);
+            world.setBlockToAir(pos);
+        }
+
+        return false;
+
+    }
+    */
 }
 

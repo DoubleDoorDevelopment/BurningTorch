@@ -73,6 +73,6 @@
     "decay=0,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 180 },
     "decay=0,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 270 },
 
-    "inventory": [ {"model": "burningtorch:burningtorch"}]
+    "inventory": [{}]
   }
 }
