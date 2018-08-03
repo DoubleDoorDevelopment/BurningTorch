@@ -1,10 +1,10 @@
 package net.doubledoordev;
 
-import net.doubledoordev.Blocks.BurningTorchBase;
-import net.doubledoordev.TileEntities.TorchTE;
+import net.doubledoordev.blocks.BlockBurningTorch;
+import net.doubledoordev.items.ItemCharredTorchRemains;
+import net.doubledoordev.tileentities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.block.statemap.StateMap;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -12,6 +12,7 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -27,6 +28,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 )
 public class BurningTorch
 {
+    @SidedProxy(clientSide = "net.doubledoordev.proxy.ClientProxy", serverSide = "net.doubledoordev.BurningTorch")
+    public static BurningTorch proxy;
 
     public static final String MOD_ID = "burningtorch";
     public static final String MOD_NAME = "Burning Torch";
@@ -54,7 +57,6 @@ public class BurningTorch
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
-
     }
 
     /**
@@ -63,7 +65,6 @@ public class BurningTorch
     @Mod.EventHandler
     public void postinit(FMLPostInitializationEvent event)
     {
-
     }
 
     /**
@@ -73,7 +74,8 @@ public class BurningTorch
     @GameRegistry.ObjectHolder(MOD_ID)
     public static class Blocks
     {
-      public static final BurningTorchBase burningtorch = null;
+        @GameRegistry.ObjectHolder("burningtorch")
+        public static final Block burningtorch = null;
     }
 
     /**
@@ -83,6 +85,8 @@ public class BurningTorch
     @GameRegistry.ObjectHolder(MOD_ID)
     public static class Items
     {
+        @GameRegistry.ObjectHolder("charredtorchremains")
+        public static ItemCharredTorchRemains itemCharredTorchRemains;
     }
 
     /**
@@ -97,7 +101,8 @@ public class BurningTorch
         @SubscribeEvent
         public static void addBlocks(RegistryEvent.Register<Block> event)
         {
-           event.getRegistry().register(new BurningTorchBase(Material.WOOD));
+            // Needs to be CIRCUITS for water to break.
+           event.getRegistry().register(new BlockBurningTorch(Material.CIRCUITS));
         }
 
         /**
@@ -107,6 +112,7 @@ public class BurningTorch
         public static void addItems(RegistryEvent.Register<Item> event)
         {
            event.getRegistry().register(new ItemBlock(Blocks.burningtorch).setRegistryName(Blocks.burningtorch.getRegistryName()));
+           event.getRegistry().register(new ItemCharredTorchRemains());
         }
     }
 
@@ -114,7 +120,6 @@ public class BurningTorch
     @SubscribeEvent
     public static void registerRenders(ModelRegistryEvent event)
     {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(Blocks.burningtorch), 0, new ModelResourceLocation(Blocks.burningtorch.getRegistryName(), "inventory"));
         ModelLoader.setCustomStateMapper(Blocks.burningtorch, new StateMap.Builder().build());
     }
 }

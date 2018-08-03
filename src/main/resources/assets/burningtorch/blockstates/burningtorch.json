@@ -1,6 +1,7 @@
 {
   "forge_marker": 1,
   "variants": {
+    "normal": {"model": "burningtorch:burningtorch"},
     "decay=5,direction=up,lit=true": { "model": "burningtorch:burningtorch" },
     "decay=5,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
     "decay=5,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },

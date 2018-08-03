@@ -1,1 +1,17 @@
 tile.burningtorch.name=Burning Torch
+item.charredtorchremains.name=Chared Torch Remains
+burningtorch.config.title=Burning Torch Config
+burningtorch.config.rainupdaterate=Rain Update Rate
+burningtorch.config.burnrate=Torch Burn Rate
+burningtorch.config.itemstorelighttorches=Relighting Torch Items
+burningtorch.config.itemstoextinguish=Extinguishing Torch Items
+burningtorch.config.itemstoextend=Torch Repair Items
+burningtorch.config.rainextinguish=Rain Extinguishing
+burningtorch.config.lightatlevel5=Light Level at State 5
+burningtorch.config.lightatlevel4=Light Level at State 4
+burningtorch.config.lightatlevel3=Light Level at State 3
+burningtorch.config.lightatlevel2=Light Level at State 2
+burningtorch.config.lightatlevel1=Light Level at State 1
+burningtorch.config.lightunlit=Light Level When Unlit
+burningtorch.config.startingdecaylevel=Starting Decay Level
+burningtorch.config.dropeditemswhenbroke=Items Droped When Broke

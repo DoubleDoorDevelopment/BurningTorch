@@ -10,14 +10,14 @@ import java.util.Map;
 public class ModConfig
 {
     @Config.LangKey("burningtorch.config.rainupdaterate")
-    @Config.Comment("How slow a torch will react to a storm in ticks. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
+    @Config.Comment("How quickly a torch will react to a storm in ticks, Lower values are faster. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
     @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
     public static int rainUpdateRate = 40;
 
     @Config.LangKey("burningtorch.config.burnrate")
-    @Config.Comment("How slow a torch will burn down in ticks. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
+    @Config.Comment("How many ticks between decay levels. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
     @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
-    public static int decayRate = 200;
+    public static int decayRate = 18000;
 
     @Config.LangKey("burningtorch.config.itemstorelighttorches")
     @Config.Comment("What items can relight a torch.")
@@ -76,8 +76,8 @@ public class ModConfig
     @Config.RangeInt(min = 0, max = 16)
     public static int lightLevel1 = 14;
 
-    @Config.LangKey("burningtorch.config.lightatlevel0")
-    @Config.Comment("How much light does a burnt out torches give?")
+    @Config.LangKey("burningtorch.config.lightunlit")
+    @Config.Comment("How much light does an unlit torche give?")
     @Config.RangeInt(min = 0, max = 16)
     public static int lightLevelUnlitTorch = 0;
 
@@ -86,13 +86,13 @@ public class ModConfig
     @Config.RangeInt(min = 1, max = 5)
     public static int startingDecayLevel = 5;
 
-    @Config.LangKey("burningtorch.config.itemstoextend")
+    @Config.LangKey("burningtorch.config.dropeditemswhenbroke")
     @Config.Comment("What is dropped when a torch is broke? Set quantity to 9 for nugget based math.")
     public static final Map<String, Integer> drops = new HashMap<>();
 
     static
     {
-        drops.put("minecraft:coal", 9);
+        drops.put("burningtorch:charredtorchremains", 9);
     }
 
 }

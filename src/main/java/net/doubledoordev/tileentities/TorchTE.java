@@ -1,7 +1,7 @@
-package net.doubledoordev.TileEntities;
+package net.doubledoordev.tileentities;
 
-import net.doubledoordev.Blocks.BurningTorchBase;
 import net.doubledoordev.ModConfig;
+import net.doubledoordev.blocks.BlockBurningTorch;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -51,7 +51,7 @@ public class TorchTE extends TileEntity implements ITickable
     {
         if (this.world.getBlockState(pos).getBlock() == Block.getBlockFromName("burningtorch:burningtorch"))
         {
-            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BurningTorchBase.LIT))
+            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BlockBurningTorch.LIT))
             {
                 rainTimer++;
                 decayTimer++;
@@ -62,7 +62,7 @@ public class TorchTE extends TileEntity implements ITickable
                     if (this.world.isRaining() && this.world.canBlockSeeSky(pos))
                     {
                         this.world.setBlockState(pos, world.getBlockState(pos)
-                                .withProperty(BurningTorchBase.LIT, false));
+                                .withProperty(BlockBurningTorch.LIT, false));
                         updateBlock();
                         rainTimer = 0;
                     }

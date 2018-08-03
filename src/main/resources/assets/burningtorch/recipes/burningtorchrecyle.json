@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    " # ",
+    " # "
+  ],
+  "key": {
+    "#":
+    {
+      "item": "minecraft:stick"
+    },
+    "X":
+      {
+        "item": "burningtorch:charredtorchremains"
+      }
+  },
+  "result": {
+    "item": "burningtorch:burningtorch",
+    "count": 1
+  }
+}

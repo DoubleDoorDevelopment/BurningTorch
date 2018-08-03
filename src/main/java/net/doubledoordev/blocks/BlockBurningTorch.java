@@ -1,7 +1,7 @@
-package net.doubledoordev.Blocks;
+package net.doubledoordev.blocks;
 
 import net.doubledoordev.ModConfig;
-import net.doubledoordev.TileEntities.TorchTE;
+import net.doubledoordev.tileentities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -10,6 +10,7 @@ import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,6 +27,7 @@ import net.minecraft.world.ChunkCache;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -36,7 +38,7 @@ import java.util.Random;
 import static net.doubledoordev.BurningTorch.MOD_ID;
 
 
-public class BurningTorchBase extends Block
+public class BlockBurningTorch extends Block
 {
     public static final PropertyDirection DIRECTION = PropertyDirection.create("direction");
     public static final PropertyBool LIT = PropertyBool.create("lit");
@@ -49,14 +51,14 @@ public class BurningTorchBase extends Block
     private static final AxisAlignedBB TORCH_EAST_AABB = new AxisAlignedBB(   0.0D,                0.20000000298023224D, 0.3499999940395355D, 0.40000001192092896D, 1.000100011920929D,  0.6499999761581421D);
 
     //TODO: Torches when destroyed need to drop special stuff correctly...
-    public BurningTorchBase(Material materialIn)
+    public BlockBurningTorch(Material materialIn)
     {
         super(materialIn);
-        this.setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
-        this.setLightLevel(0.9375f);
-        this.setCreativeTab(CreativeTabs.DECORATIONS);
-        this.setUnlocalizedName("burningtorch");
-        this.setRegistryName(MOD_ID, "burningtorch");
+        setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
+        setLightLevel(0.9375f);
+        setCreativeTab(CreativeTabs.DECORATIONS);
+        setUnlocalizedName("burningtorch");
+        setRegistryName(MOD_ID, "burningtorch");
     }
 
     // Handles the relighting of torches and a bunch of other stuff.
@@ -103,6 +105,11 @@ public class BurningTorchBase extends Block
         }
 
         return false;
+    }
+
+    @SideOnly(Side.CLIENT)
+    public void initModel() {
+        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
     }
 
     // Changes the lighting level based off the LIT blockstate property.
@@ -227,8 +234,10 @@ public class BurningTorchBase extends Block
     // Does stuff....
     private boolean onNeighborChangeInternal(World worldIn, BlockPos pos, IBlockState state)
     {
+        //if check drop is false
         if (!this.checkForDrop(worldIn, pos, state))
         {
+            //no dropy
             return true;
         }
         else
@@ -239,10 +248,12 @@ public class BurningTorchBase extends Block
             BlockPos blockpos = pos.offset(enumfacing1);
             boolean flag = false;
 
+            // if axis is horizontal and faceshape is not soild.
             if (enumfacing$axis.isHorizontal() && worldIn.getBlockState(blockpos).getBlockFaceShape(worldIn, blockpos, enumfacing) != BlockFaceShape.SOLID)
             {
                 flag = true;
             }
+            //if axis is vertical and can't be placed?
             else if (enumfacing$axis.isVertical() && !this.canPlaceOn(worldIn, blockpos))
             {
                 flag = true;
@@ -250,7 +261,7 @@ public class BurningTorchBase extends Block
 
             if (flag)
             {
-                this.dropBlockAsItem(worldIn, pos, state, 0);
+                this.dropBlockAsItemWithChance(worldIn, pos, state,100,0);
                 worldIn.setBlockToAir(pos);
                 return true;
             }
@@ -341,15 +352,18 @@ public class BurningTorchBase extends Block
     // Does stuff....
     private boolean checkForDrop(World worldIn, BlockPos pos, IBlockState state)
     {
+        // If this block = this block and this can be placed here return true.
         if (state.getBlock() == this && this.canPlaceAt(worldIn, pos, state.getValue(DIRECTION)))
         {
             return true;
         }
         else
         {
+            //if this block = this block
             if (worldIn.getBlockState(pos).getBlock() == this)
             {
-                this.getItemDropped(state, null ,0);
+                //drop and set to air.
+                this.dropBlockAsItemWithChance(worldIn, pos, state,100,0);
                 worldIn.setBlockToAir(pos);
             }
 
@@ -898,7 +912,6 @@ public class BurningTorchBase extends Block
     @Override
     public void getDrops(net.minecraft.util.NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune)
     {
-        System.out.print("\n getDrops " + getActualState(state, world,pos));
         switch (getActualState(state, world, pos).getValue(DECAY))
         {
             case 5:
@@ -980,29 +993,5 @@ public class BurningTorchBase extends Block
         super.harvestBlock(world, player, pos, state, te, tool);
         world.setBlockToAir(pos);
     }
-
-    /*
-    @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest)
-    {
-        System.out.print("\n RemovedByPlayer " + world+ " " + player + " " + pos + " " + state + " " + willHarvest + " " + getActualState(state, world,pos));
-
-        //if (willHarvest) return true; //If it will harvest, delay deletion of the block until after getDrops
-        //return super.removedByPlayer(state, world, pos, player, willHarvest);
-        //boolean tmp = super.removedByPlayer(state, world, pos, player, willHarvest);
-        //System.out.print("\n" + tmp +"\n");
-        return super.removedByPlayer(state, world, pos, player, willHarvest);
-
-        /*
-        if (world.getBlockState(pos).getBlock() == this)
-        {
-            this.dropBlockAsItem(world, pos, state, 0);
-            world.setBlockToAir(pos);
-        }
-
-        return false;
-
-    }
-    */
 }
 
