@@ -1,8 +1,8 @@
-package net.doubledoordev.proxy;
+package net.doubledoordev.burningtorch.proxy;
 
-import net.doubledoordev.BurningTorch;
-import net.doubledoordev.blocks.BlockBurningTorch;
-import net.doubledoordev.items.ItemCharredTorchRemains;
+import net.doubledoordev.burningtorch.BurningTorch;
+import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
+import net.doubledoordev.burningtorch.items.ItemCharredTorchRemains;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

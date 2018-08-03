@@ -1,8 +1,8 @@
-package net.doubledoordev;
+package net.doubledoordev.burningtorch;
 
-import net.doubledoordev.blocks.BlockBurningTorch;
-import net.doubledoordev.items.ItemCharredTorchRemains;
-import net.doubledoordev.tileentities.TorchTE;
+import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
+import net.doubledoordev.burningtorch.items.ItemCharredTorchRemains;
+import net.doubledoordev.burningtorch.tileentities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -28,7 +28,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 )
 public class BurningTorch
 {
-    @SidedProxy(clientSide = "net.doubledoordev.proxy.ClientProxy", serverSide = "net.doubledoordev.BurningTorch")
+    @SidedProxy(clientSide = "net.doubledoordev.proxy.ClientProxy", serverSide = "net.doubledoordev.burningtorch.BurningTorch")
     public static BurningTorch proxy;
 
     public static final String MOD_ID = "burningtorch";

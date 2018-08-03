@@ -1,4 +1,4 @@
-package net.doubledoordev;
+package net.doubledoordev.burningtorch;
 
 import net.minecraftforge.common.config.Config;
 

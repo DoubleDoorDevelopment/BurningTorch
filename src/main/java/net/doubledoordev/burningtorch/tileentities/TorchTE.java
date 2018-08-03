@@ -1,7 +1,7 @@
-package net.doubledoordev.tileentities;
+package net.doubledoordev.burningtorch.tileentities;
 
-import net.doubledoordev.ModConfig;
-import net.doubledoordev.blocks.BlockBurningTorch;
+import net.doubledoordev.burningtorch.ModConfig;
+import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;

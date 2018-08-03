@@ -1,7 +1,7 @@
-package net.doubledoordev.blocks;
+package net.doubledoordev.burningtorch.blocks;
 
-import net.doubledoordev.ModConfig;
-import net.doubledoordev.tileentities.TorchTE;
+import net.doubledoordev.burningtorch.ModConfig;
+import net.doubledoordev.burningtorch.tileentities.TorchTE;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 
-import static net.doubledoordev.BurningTorch.MOD_ID;
+import static net.doubledoordev.burningtorch.BurningTorch.MOD_ID;
 
 
 public class BlockBurningTorch extends Block

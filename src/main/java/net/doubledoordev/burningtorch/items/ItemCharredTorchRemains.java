@@ -1,4 +1,4 @@
-package net.doubledoordev.items;
+package net.doubledoordev.burningtorch.items;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
@@ -7,7 +7,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static net.doubledoordev.BurningTorch.MOD_ID;
+import static net.doubledoordev.burningtorch.BurningTorch.MOD_ID;
 
 public class ItemCharredTorchRemains extends Item
 {
