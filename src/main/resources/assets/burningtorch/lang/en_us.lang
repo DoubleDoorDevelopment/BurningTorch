@@ -15,3 +15,7 @@ burningtorch.config.lightatlevel1=Light Level at State 1
 burningtorch.config.lightunlit=Light Level When Unlit
 burningtorch.config.startingdecaylevel=Starting Decay Level
 burningtorch.config.dropeditemswhenbroke=Items Droped When Broke
+burningtorch.config.dropeditemswhenvanillabroke=Items Droped When Vanilla Torch Breaks
+burningtorch.config.removevanillatorchrecipe=Remove Vanilla Torch Recipe
+burningtorch.config.removevanillatorchdrops=Vanilla Torch Drops
+burningtorch.config.vanillatorchitemdropchance=Chance for Vanilla Torch Drops
