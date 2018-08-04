@@ -30,6 +30,7 @@ public class TorchTE extends TileEntity implements ITickable
     {
         super.readFromNBT(compound);
         decayLevel = compound.getInteger("decaylevel");
+        decayTimer = compound.getInteger("decayTimer");
     }
 
     @Override
@@ -37,6 +38,7 @@ public class TorchTE extends TileEntity implements ITickable
     {
         super.writeToNBT(compound);
         compound.setInteger("decaylevel", decayLevel);
+        compound.setInteger("decayTimer", decayTimer);
         return compound;
     }
 
@@ -71,7 +73,7 @@ public class TorchTE extends TileEntity implements ITickable
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
                 if (decayTimer > ModConfig.decayRate)
                 {
-                    if (/*this.world.getBlockState(pos).getValue(BurningTorchBase.LIT) && */ decayLevel > 0)
+                    if (decayLevel > 0)
                     {
                         this.decayLevel = decayLevel - 1;
                         updateBlock();

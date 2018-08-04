@@ -3,6 +3,7 @@ package net.doubledoordev.burningtorch;
 import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
 import net.doubledoordev.burningtorch.items.ItemCharredTorchRemains;
 import net.doubledoordev.burningtorch.tileentities.TorchTE;
+import net.doubledoordev.burningtorch.util.EventHandlers;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.statemap.StateMap;
@@ -10,6 +11,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -28,12 +30,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 )
 public class BurningTorch
 {
-    @SidedProxy(clientSide = "net.doubledoordev.proxy.ClientProxy", serverSide = "net.doubledoordev.burningtorch.BurningTorch")
+    @SidedProxy(clientSide = "net.doubledoordev.burningtorch.proxy.ClientProxy", serverSide = "net.doubledoordev.burningtorch.BurningTorch")
     public static BurningTorch proxy;
 
     public static final String MOD_ID = "burningtorch";
     public static final String MOD_NAME = "Burning Torch";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     /**
      * This is the instance of your mod as created by Forge. It will never be null.
@@ -49,6 +51,7 @@ public class BurningTorch
     public void preinit(FMLPreInitializationEvent event)
     {
         GameRegistry.registerTileEntity(TorchTE.class, MOD_ID +":torchte");
+        MinecraftForge.EVENT_BUS.register(new EventHandlers());
     }
 
     /**

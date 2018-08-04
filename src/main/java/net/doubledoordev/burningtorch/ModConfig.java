@@ -95,4 +95,26 @@ public class ModConfig
         drops.put("burningtorch:charredtorchremains", 9);
     }
 
+    @Config.LangKey("burningtorch.config.dropeditemswhenvanillabroke")
+    @Config.Comment("What is dropped when a vanilla torch is broke?")
+    public static final Map<String, Integer> vanillaDrops = new HashMap<>();
+
+    static
+    {
+        vanillaDrops.put("burningtorch:charredtorchremains", 3);
+    }
+
+    @Config.LangKey("burningtorch.config.removevanillatorchrecipe")
+    @Config.Comment("Should the vanilla torch recipe be removed?")
+    public static boolean removeVanillaTorchRecipe = true;
+
+    @Config.LangKey("burningtorch.config.removevanillatorchdrops")
+    @Config.Comment("Should vanilla torches drops be replaced?")
+    public static boolean replaceVanillaTorchDrops = true;
+
+    @Config.LangKey("burningtorch.config.vanillatorchitemdropchance")
+    @Config.Comment("The drop chance for any items we add to vanilla torches.")
+    @Config.RangeDouble(min = 0, max = 1)
+    public static Double dropChance = 1D;
+
 }
