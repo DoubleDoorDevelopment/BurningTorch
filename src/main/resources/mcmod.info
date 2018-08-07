@@ -8,13 +8,13 @@
     "url": "",
     "updateUrl": "",
     "authorList": [
-      ""
+      "DoubleDoorDev",
+      "Claycorp",
+      "Dries007"
     ],
     "credits": "",
     "logoFile": "",
     "screenshots": [],
-    "dependencies": [
-      ""
-    ]
+    "dependencies": []
   }
 ]
