@@ -14,13 +14,11 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockRenderLayer;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkCache;
@@ -72,6 +70,7 @@ public class BlockBurningTorch extends Block
             if (playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || playerIn.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && !state.getValue(LIT))
             {
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(LIT, true));
+                worldIn.playSound(playerIn, pos, new SoundEvent(new ResourceLocation("item.flintandsteel.use")), SoundCategory.BLOCKS, 0.3F, 0.8F);
                 return true;
             }
         }
@@ -81,6 +80,7 @@ public class BlockBurningTorch extends Block
             if (playerIn.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || playerIn.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && state.getValue(LIT))
             {
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).withProperty(LIT, false));
+                worldIn.playSound(playerIn, pos, new SoundEvent(new ResourceLocation("block.redstone_torch.burnout")), SoundCategory.BLOCKS, 0.2F, 0.8F);
                 return true;
             }
         }
@@ -93,15 +93,24 @@ public class BlockBurningTorch extends Block
                     {
                         torchTE.setDecayLevel(5);
                         playerIn.getHeldItemMainhand().setCount(playerIn.getHeldItemMainhand().getCount() - 1);
+                        worldIn.playSound(playerIn, pos, new SoundEvent(new ResourceLocation("block.redstone_torch.burnout")), SoundCategory.BLOCKS, 0.2F, 0.8F);
                         return true;
                     }
                     else
                     {
                         torchTE.setDecayLevel(worldIn.getBlockState(pos).getBlock().getActualState(state, worldIn, pos).getValue(DECAY) + entry.getValue());
                         playerIn.getHeldItemMainhand().setCount(playerIn.getHeldItemMainhand().getCount() - 1);
+                        worldIn.playSound(playerIn, pos, new SoundEvent(new ResourceLocation("block.redstone_torch.burnout")), SoundCategory.BLOCKS, 0.2F, 0.8F);
                         return true;
                     }
                 }
+        }
+
+        if (playerIn.getHeldItemMainhand().getItem() == Items.SHEARS)
+        {
+            worldIn.playSound(playerIn, pos, new SoundEvent(new ResourceLocation("entity.sheep.shear")), SoundCategory.BLOCKS, 0.2F, 0.8F);
+            torchTE.setDecayLevel(worldIn.getBlockState(pos).getBlock().getActualState(state, worldIn, pos).getValue(DECAY) -1);
+            return true;
         }
 
         return false;
@@ -280,11 +289,13 @@ public class BlockBurningTorch extends Block
         boolean lit = stateIn.getValue(LIT);
         EnumFacing enumfacing = stateIn.getValue(DIRECTION);
         int decay = torchTE.getDecayLevel();
+        double random = Math.random();
 
         double d0 = (double)pos.getX() + 0.5D;
         double d1 = (double)pos.getY() + 0.9D;
         double d2 = (double)pos.getZ() + 0.5D;
 
+        // Fix d1 for height changes.
         switch (decay)
         {
             case 5:
@@ -309,9 +320,11 @@ public class BlockBurningTorch extends Block
 
         if (lit)
         {
+            // Checking if torch is placed on the side of something.
             if (enumfacing.getAxis().isHorizontal())
             {
                 EnumFacing enumfacing1 = enumfacing.getOpposite();
+                // Side attached torches particle spawning.
                 switch (decay)
                 {
                     case 5:
@@ -331,8 +344,13 @@ public class BlockBurningTorch extends Block
                         worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.3D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.16D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 1:
-                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
-                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        if (random > 0.5)
+                        {
+                            worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                            worldIn.spawnParticle(EnumParticleTypes.FLAME, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
+                        }
+                        else
+                            worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, d0 + 0.35D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.28D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 0:
                         worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0 + 0.1D * (double) enumfacing1.getFrontOffsetX(), d1 + 0.09D, d2 + 0.3D * (double) enumfacing1.getFrontOffsetZ(), 0.0D, 0.0D, 0.0D);
@@ -341,10 +359,42 @@ public class BlockBurningTorch extends Block
                 }
 
             }
+            // Otherwise its a regular torch.
             else
             {
-                worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                // Standing torch particle spawning.
+                switch (decay)
+                {
+                    case 5:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 4:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 3:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 2:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 1:
+                        if (random > 0.5)
+                        {
+                            worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        }
+                        else
+                            worldIn.spawnParticle(EnumParticleTypes.SMOKE_LARGE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                    case 0:
+                        worldIn.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        worldIn.spawnParticle(EnumParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        break;
+                }
             }
         }
     }
