@@ -1,4 +1,5 @@
 tile.burningtorch.name=Burning Torch
+tile.burningtorchextinguished.name=Burning Torch (Unlit)
 item.charredtorchremains.name=Chared Torch Remains
 burningtorch.config.title=Burning Torch Config
 burningtorch.config.rainupdaterate=Rain Update Rate
@@ -19,3 +20,6 @@ burningtorch.config.dropeditemswhenvanillabroke=Items Droped When Vanilla Torch 
 burningtorch.config.removevanillatorchrecipe=Remove Vanilla Torch Recipe
 burningtorch.config.removevanillatorchdrops=Vanilla Torch Drops
 burningtorch.config.vanillatorchitemdropchance=Chance for Vanilla Torch Drops
+burningtorch.config.place.unlit=Toggle if placed torches are lit or unlit.
+burningtorch.config.torchstartsfire=Toggle if placed lit torches should start near by burnable objects on fire.
+burningtorch.config.torchburnsentities=Toggle if placed lit torches should burn entities standing on them.

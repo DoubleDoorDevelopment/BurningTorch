@@ -117,4 +117,15 @@ public class ModConfig
     @Config.RangeDouble(min = 0, max = 1)
     public static Double dropChance = 1D;
 
+    @Config.LangKey("burningtorch.config.place.unlit")
+    @Config.Comment("Toggle whither torches are lit when placed or unlit. true=lit false=unlit")
+    public static boolean placeLitTorches = true;
+
+    @Config.LangKey("burningtorch.config.torchstartsfire")
+    @Config.Comment("Toggle whither torches start fires when lit. true=fire false=no fire")
+    public static boolean torchesStartFireWhenLit = true;
+
+    @Config.LangKey("burningtorch.config.torchburnsentities")
+    @Config.Comment("Toggle whither torches burn entities when lit. true=burn false=no burn")
+    public static boolean torchesBurnEntities = true;
 }

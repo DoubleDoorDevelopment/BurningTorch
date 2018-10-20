@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static net.doubledoordev.burningtorch.BurningTorch.MOD_ID;
+import static net.doubledoordev.burningtorch.ModConfig.*;
 
 
 public class BlockBurningTorch extends Block
@@ -52,11 +54,21 @@ public class BlockBurningTorch extends Block
     public BlockBurningTorch(Material materialIn)
     {
         super(materialIn);
-        setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
+        if (placeLitTorches)
+            setDefaultState(this.getDefaultState().withProperty(LIT, true).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
+        else
+            setDefaultState(this.getDefaultState().withProperty(LIT, false).withProperty(DIRECTION, EnumFacing.UP).withProperty(DECAY, 5));
         setLightLevel(0.9375f);
         setCreativeTab(CreativeTabs.DECORATIONS);
-        setUnlocalizedName("burningtorch");
+        if (placeLitTorches)
+            setUnlocalizedName("burningtorch");
+        else
+            setUnlocalizedName("burningtorchextinguished");
         setRegistryName(MOD_ID, "burningtorch");
+        if (torchesStartFireWhenLit)
+            setTickRandomly(true);
+        else
+            setTickRandomly(false);
     }
 
     // Handles the relighting of torches and a bunch of other stuff.
@@ -118,7 +130,10 @@ public class BlockBurningTorch extends Block
 
     @SideOnly(Side.CLIENT)
     public void initModel() {
-        ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        if (placeLitTorches)
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName(), "inventory"));
+        else
+            ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(this), 0, new ModelResourceLocation(getRegistryName() + "_extinguished", "inventory"));
     }
 
     // Changes the lighting level based off the LIT blockstate property.
@@ -1042,6 +1057,90 @@ public class BlockBurningTorch extends Block
     {
         super.harvestBlock(world, player, pos, state, te, tool);
         world.setBlockToAir(pos);
+    }
+
+    @Override
+    public boolean isBurning(IBlockAccess world, BlockPos pos)
+    {
+        if (torchesBurnEntities)
+        {
+            return world.getBlockState(pos).getValue(LIT);
+        }
+        return false;
+    }
+
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    {
+        if (worldIn.getGameRules().getBoolean("doFireTick"))
+        {
+            int i = rand.nextInt(3);
+
+            if (i > 0)
+            {
+                BlockPos blockpos = pos;
+
+                for (int j = 0; j < i; ++j)
+                {
+                    blockpos = blockpos.add(rand.nextInt(3) - 1, 1, rand.nextInt(3) - 1);
+
+                    if (blockpos.getY() >= 0 && blockpos.getY() < worldIn.getHeight() && !worldIn.isBlockLoaded(blockpos))
+                    {
+                        return;
+                    }
+
+                    IBlockState block = worldIn.getBlockState(blockpos);
+
+                    if (block.getBlock().isAir(block, worldIn, blockpos))
+                    {
+                        if (this.isSurroundingBlockFlammable(worldIn, blockpos))
+                        {
+                            worldIn.setBlockState(blockpos, Blocks.FIRE.getDefaultState());
+                            return;
+                        }
+                    }
+                    else if (block.getMaterial().blocksMovement())
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                for (int k = 0; k < 3; ++k)
+                {
+                    BlockPos blockpos1 = pos.add(rand.nextInt(3) - 1, 0, rand.nextInt(3) - 1);
+
+                    if (blockpos1.getY() >= 0 && blockpos1.getY() < 256 && !worldIn.isBlockLoaded(blockpos1))
+                    {
+                        return;
+                    }
+
+                    if (worldIn.isAirBlock(blockpos1.up()) && this.getCanBlockBurn(worldIn, blockpos1))
+                    {
+                        worldIn.setBlockState(blockpos1.up(), Blocks.FIRE.getDefaultState());
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isSurroundingBlockFlammable(World worldIn, BlockPos pos)
+    {
+        for (EnumFacing enumfacing : EnumFacing.values())
+        {
+            if (this.getCanBlockBurn(worldIn, pos.offset(enumfacing)))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean getCanBlockBurn(World worldIn, BlockPos pos)
+    {
+        return (pos.getY() < 0 || pos.getY() >= 256 || worldIn.isBlockLoaded(pos)) && worldIn.getBlockState(pos).getMaterial().getCanBurn();
     }
 }
 
