@@ -1,6 +1,7 @@
 package net.doubledoordev.burningtorch.util;
 
-import net.doubledoordev.burningtorch.ModConfig;
+import java.util.Map;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -11,7 +12,7 @@ import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistryModifiable;
 
-import java.util.Map;
+import net.doubledoordev.burningtorch.ModConfig;
 
 public class EventHandlers
 {
