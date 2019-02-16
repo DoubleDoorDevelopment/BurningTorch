@@ -1,14 +1,28 @@
 package net.doubledoordev.burningtorch;
 
-import net.minecraftforge.common.config.Config;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Config(modid = BurningTorch.MOD_ID)
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+
+import static net.doubledoordev.burningtorch.BurningTorch.MOD_ID;
+
+@Config(modid = MOD_ID)
 @Config.LangKey("burningtorch.config.title")
 public class ModConfig
 {
+    @SubscribeEvent
+    public static void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event)
+    {
+        if (event.getModID().equals(MOD_ID))
+        {
+            ConfigManager.sync(MOD_ID, Config.Type.INSTANCE);
+        }
+    }
+
     @Config.LangKey("burningtorch.config.rainupdaterate")
     @Config.Comment("How quickly a torch will react to a storm in ticks, Lower values are faster. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
     @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
