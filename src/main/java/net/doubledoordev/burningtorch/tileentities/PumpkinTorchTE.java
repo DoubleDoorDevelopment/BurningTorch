@@ -13,15 +13,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import net.doubledoordev.burningtorch.ModConfig;
-import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
+import net.doubledoordev.burningtorch.blocks.BlockBurningPumpkin;
 
-public class TorchTE extends TileEntity implements ITickable
+public class PumpkinTorchTE extends TileEntity implements ITickable
 {
-    int decayLevel = ModConfig.torchStartingDecayLevel;
-    int rainTimer;
+    int decayLevel = ModConfig.pumkinStartingDecayLevel;
     int decayTimer;
 
-    public TorchTE()
+    public PumpkinTorchTE()
     {
         super();
     }
@@ -52,24 +51,11 @@ public class TorchTE extends TileEntity implements ITickable
     @Override
     public void update()
     {
-        if (this.world.getBlockState(pos).getBlock() == Block.getBlockFromName("burningtorch:burningtorch"))
+        if (this.world.getBlockState(pos).getBlock() == Block.getBlockFromName("burningtorch:burningpumpkin"))
         {
-            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BlockBurningTorch.LIT))
+            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BlockBurningPumpkin.LIT))
             {
-                rainTimer++;
                 decayTimer++;
-
-                // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-                if (rainTimer > ModConfig.rainUpdateRate && ModConfig.shouldRainExtinguish)
-                {
-                    if (this.world.isRaining() && this.world.canBlockSeeSky(pos))
-                    {
-                        this.world.setBlockState(pos, world.getBlockState(pos)
-                                .withProperty(BlockBurningTorch.LIT, false));
-                        updateBlock();
-                        rainTimer = 0;
-                    }
-                }
 
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
                 if (decayTimer > ModConfig.decayRate)
@@ -108,17 +94,20 @@ public class TorchTE extends TileEntity implements ITickable
 
     @Override
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
         return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
+    public NBTTagCompound getUpdateTag()
+    {
         return this.writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
+    {
         readFromNBT(pkt.getNbtCompound());
         updateBlock();
     }
@@ -127,9 +116,7 @@ public class TorchTE extends TileEntity implements ITickable
     {
         this.world.markBlockRangeForRenderUpdate(pos, pos);
         this.world.notifyBlockUpdate(pos, this.world.getBlockState(pos), this.world.getBlockState(pos), 0);
-        this.world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
+        this.world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
         markDirty();
     }
-
 }
-

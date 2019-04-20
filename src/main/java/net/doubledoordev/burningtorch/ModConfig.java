@@ -44,7 +44,7 @@ public class ModConfig
     }
 
     @Config.LangKey("burningtorch.config.itemstoextend")
-    @Config.Comment("What items can relight a torch.")
+    @Config.Comment("What items can add more time to a torch. Number is levels added.")
     public static final Map<String, Integer> extendingingItems = new HashMap<>();
 
     static
@@ -83,14 +83,49 @@ public class ModConfig
     public static int lightLevel1 = 14;
 
     @Config.LangKey("burningtorch.config.lightunlit")
-    @Config.Comment("How much light does an unlit torche give?")
+    @Config.Comment("How much light does an unlit torch give?")
     @Config.RangeInt(min = 0, max = 16)
     public static int lightLevelUnlitTorch = 0;
 
     @Config.LangKey("burningtorch.config.startingdecaylevel")
-    @Config.Comment("What decay level do the torches start at?")
+    @Config.Comment("What decay level do the pumpkin start at?")
     @Config.RangeInt(min = 1, max = 5)
-    public static int startingDecayLevel = 5;
+    public static int torchStartingDecayLevel = 5;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightatlevel5")
+    @Config.Comment("How much light does new pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevel5 = 14;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightatlevel4")
+    @Config.Comment("How much light does an almost new pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevel4 = 14;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightatlevel3")
+    @Config.Comment("How much light does a half used pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevel3 = 14;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightatlevel2")
+    @Config.Comment("How much light does an almost burnt out pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevel2 = 14;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightatlevel1")
+    @Config.Comment("How much light does a burning out pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevel1 = 14;
+
+    @Config.LangKey("burningtorch.config.pumpkin.lightunlit")
+    @Config.Comment("How much light does an unlit pumpkin give?")
+    @Config.RangeInt(min = 0, max = 16)
+    public static int pumpkinLightLevelUnlit = 0;
+
+    @Config.LangKey("burningtorch.config.pumpkin.startingdecaylevel")
+    @Config.Comment("What decay level do the pumpkins start at?")
+    @Config.RangeInt(min = 1, max = 5)
+    public static int pumkinStartingDecayLevel = 5;
 
     @Config.LangKey("burningtorch.config.dropeditemswhenbroke")
     @Config.Comment("What is dropped when a torch is broke? Set quantity to 9 for nugget based math.")
@@ -114,9 +149,17 @@ public class ModConfig
     @Config.Comment("Should the vanilla torch recipe be removed?")
     public static boolean removeVanillaTorchRecipe = true;
 
+    @Config.LangKey("burningtorch.config.pumpkin.removevanilladrops")
+    @Config.Comment("Should the vanilla Jack O Lantern recipe be removed?")
+    public static boolean removeVanillaJackOLantenRecipe = true;
+
     @Config.LangKey("burningtorch.config.removevanillatorchdrops")
     @Config.Comment("Should vanilla torches drops be replaced?")
     public static boolean replaceVanillaTorchDrops = true;
+
+    @Config.LangKey("burningtorch.config.pumpkin.removevanilladrops")
+    @Config.Comment("Should vanilla torches drops be replaced?")
+    public static boolean replaceVanillaPumpkinDrops = true;
 
     @Config.LangKey("burningtorch.config.vanillatorchitemdropchance")
     @Config.Comment("The drop chance for any items we add to vanilla torches.")
@@ -126,6 +169,10 @@ public class ModConfig
     @Config.LangKey("burningtorch.config.place.unlit")
     @Config.Comment("Toggle whither torches are lit when placed or unlit. true=lit false=unlit")
     public static boolean placeLitTorches = true;
+
+    @Config.LangKey("burningtorch.config.place.unlit.pumpkin")
+    @Config.Comment("Toggle whither pumpkins are lit when placed or unlit. true=lit false=unlit")
+    public static boolean placeLitPumpkins = true;
 
     @Config.LangKey("burningtorch.config.torchstartsfire")
     @Config.Comment("Toggle whither torches start fires when lit. true=fire false=no fire")

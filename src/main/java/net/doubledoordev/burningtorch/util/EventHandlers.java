@@ -19,7 +19,8 @@ public class EventHandlers
     @SubscribeEvent
     public void blockDestroy(BlockEvent.HarvestDropsEvent event)
     {
-        if (event.getState().getBlock() == Blocks.TORCH && ModConfig.replaceVanillaTorchDrops)
+        //TODO: Add jackolanterns to this.
+        if (event.getState().getBlock() == Blocks.TORCH && ModConfig.replaceVanillaTorchDrops || event.getState().getBlock() == Blocks.LIT_PUMPKIN && ModConfig.replaceVanillaPumpkinDrops)
         {
             event.getDrops().clear();
             for (Map.Entry<String, Integer> entry : ModConfig.vanillaDrops.entrySet())
@@ -34,10 +35,15 @@ public class EventHandlers
     public void removeRecipe(RegistryEvent.Register<IRecipe> event)
     {
         ResourceLocation torch = new ResourceLocation("minecraft:torch");
+        ResourceLocation pumpkin = new ResourceLocation("minecraft:lit_pumpkin");
         IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
         if (ModConfig.removeVanillaTorchRecipe)
         {
             modRegistry.remove(torch);
+        }
+        if (ModConfig.removeVanillaJackOLantenRecipe)
+        {
+            modRegistry.remove(pumpkin);
         }
     }
 

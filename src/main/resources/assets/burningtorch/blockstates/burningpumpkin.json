@@ -1,0 +1,260 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "normal": {
+      "model": "lit_pumpkin"
+    },
+    "decay=5,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=5,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=5,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=5,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=5,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=5,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=4,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=4,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=4,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=4,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=4,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=4,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=3,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=3,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=3,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=3,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=3,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=3,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=2,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=2,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=2,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=2,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=2,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=2,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=1,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=1,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=1,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=1,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=1,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=1,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=0,direction=up,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=0,direction=down,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=0,direction=east,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 90
+    },
+    "decay=0,direction=south,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 180
+    },
+    "decay=0,direction=west,lit=true": {
+      "model": "lit_pumpkin",
+      "y": 270
+    },
+    "decay=0,direction=north,lit=true": {
+      "model": "lit_pumpkin"
+    },
+    "decay=5,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=5,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=5,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=5,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=5,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=5,direction=north,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=4,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=4,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=4,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=4,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=4,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=4,direction=north,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=3,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=3,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=3,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=3,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=3,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=3,direction=north,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=2,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=2,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=2,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=2,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=2,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=2,direction=north,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=1,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=1,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=1,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=1,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=1,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=1,direction=north,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=0,direction=up,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=0,direction=down,lit=false": {
+      "model": "pumpkin"
+    },
+    "decay=0,direction=east,lit=false": {
+      "model": "pumpkin",
+      "y": 90
+    },
+    "decay=0,direction=south,lit=false": {
+      "model": "pumpkin",
+      "y": 180
+    },
+    "decay=0,direction=west,lit=false": {
+      "model": "pumpkin",
+      "y": 270
+    },
+    "decay=0,direction=north,lit=false": {
+      "model": "pumpkin"
+    }
+  }
+}

@@ -11,16 +11,16 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import net.doubledoordev.burningtorch.blocks.BlockBurningPumpkin;
 import net.doubledoordev.burningtorch.blocks.BlockBurningTorch;
 import net.doubledoordev.burningtorch.items.ItemCharredTorchRemains;
+import net.doubledoordev.burningtorch.tileentities.PumpkinTorchTE;
 import net.doubledoordev.burningtorch.tileentities.TorchTE;
 import net.doubledoordev.burningtorch.util.EventHandlers;
 
@@ -52,23 +52,8 @@ public class BurningTorch
     public void preinit(FMLPreInitializationEvent event)
     {
         GameRegistry.registerTileEntity(TorchTE.class, MOD_ID +":torchte");
+        GameRegistry.registerTileEntity(PumpkinTorchTE.class, MOD_ID + ":pumpkinte");
         MinecraftForge.EVENT_BUS.register(new EventHandlers());
-    }
-
-    /**
-     * This is the second initialization event. Register custom recipes
-     */
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event)
-    {
-    }
-
-    /**
-     * This is the final initialization event. Register actions from other mods here
-     */
-    @Mod.EventHandler
-    public void postinit(FMLPostInitializationEvent event)
-    {
     }
 
     /**
@@ -80,6 +65,9 @@ public class BurningTorch
     {
         @GameRegistry.ObjectHolder("burningtorch")
         public static final Block burningtorch = null;
+
+        @GameRegistry.ObjectHolder("burningpumpkin")
+        public static final Block burningpumpkin = null;
     }
 
     /**
@@ -107,6 +95,7 @@ public class BurningTorch
         {
             // Needs to be CIRCUITS for water to break.
            event.getRegistry().register(new BlockBurningTorch(Material.CIRCUITS));
+            event.getRegistry().register(new BlockBurningPumpkin(Material.WOOD));
         }
 
         /**
@@ -116,6 +105,7 @@ public class BurningTorch
         public static void addItems(RegistryEvent.Register<Item> event)
         {
            event.getRegistry().register(new ItemBlock(Blocks.burningtorch).setRegistryName(Blocks.burningtorch.getRegistryName()));
+            event.getRegistry().register(new ItemBlock(Blocks.burningpumpkin).setRegistryName(Blocks.burningpumpkin.getRegistryName()));
            event.getRegistry().register(new ItemCharredTorchRemains());
         }
     }
@@ -125,5 +115,6 @@ public class BurningTorch
     public static void registerRenders(ModelRegistryEvent event)
     {
         ModelLoader.setCustomStateMapper(Blocks.burningtorch, new StateMap.Builder().build());
+        ModelLoader.setCustomStateMapper(Blocks.burningpumpkin, new StateMap.Builder().build());
     }
 }
