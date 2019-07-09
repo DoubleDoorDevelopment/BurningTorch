@@ -2,63 +2,83 @@ package net.doubledoordev.burningtorch.tileentities;
 
 import javax.annotation.Nullable;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.tileentity.TileEntityType;
 
-import net.doubledoordev.burningtorch.ModConfig;
-import net.doubledoordev.burningtorch.blocks.BlockBurningPumpkin;
+import net.doubledoordev.burningtorch.BurningTorchConfig;
+import net.doubledoordev.burningtorch.blocks.BlockHolder;
+import net.doubledoordev.burningtorch.blocks.BurningPumpkinBlock;
 
-public class PumpkinTorchTE extends TileEntity implements ITickable
+public class PumpkinTorchTE extends TileEntity implements ITickableTileEntity
 {
-    int decayLevel = ModConfig.pumkinStartingDecayLevel;
+    int decayLevel = BurningTorchConfig.GENERAL.pumpkinStartingDecayLevel.get();
     int decayTimer;
+
+    private PumpkinTorchTE(TileEntityType<?> p_i49963_1_)
+    {
+        super(p_i49963_1_);
+    }
 
     public PumpkinTorchTE()
     {
-        super();
+        this(TEHolder.pumpkintorchte);
     }
 
     @Override
-    public void readFromNBT(NBTTagCompound compound)
+    public void read(CompoundNBT compound)
     {
-        super.readFromNBT(compound);
-        decayLevel = compound.getInteger("decaylevel");
-        decayTimer = compound.getInteger("decayTimer");
+        super.read(compound);
+        decayLevel = compound.getInt("decaylevel");
+        decayTimer = compound.getInt("decayTimer");
     }
 
     @Override
-    public NBTTagCompound writeToNBT(NBTTagCompound compound)
+    public CompoundNBT write(CompoundNBT compound)
     {
-        super.writeToNBT(compound);
-        compound.setInteger("decaylevel", decayLevel);
-        compound.setInteger("decayTimer", decayTimer);
-        return compound;
+        compound.putInt("decaylevel", decayLevel);
+        compound.putInt("decayTimer", decayTimer);
+        return super.write(compound);
     }
 
     @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
+    @Nullable
+    public SUpdateTileEntityPacket getUpdatePacket()
     {
-        return oldState.getBlock() != newSate.getBlock();
+        return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
     }
 
     @Override
-    public void update()
+    public CompoundNBT getUpdateTag()
     {
-        if (this.world.getBlockState(pos).getBlock() == Block.getBlockFromName("burningtorch:burningpumpkin"))
+        return this.write(new CompoundNBT());
+    }
+
+    public int getDecayLevel()
+    {
+        return this.decayLevel;
+    }
+
+    public void setDecayLevel(int decayLevel)
+    {
+        this.decayLevel = decayLevel;
+        this.world.setBlockState(pos, world.getBlockState(pos).with(BurningPumpkinBlock.DECAY, decayLevel));
+    }
+
+    @Override
+    public void tick()
+    {
+        if (this.world.getBlockState(pos).getBlock() == BlockHolder.burningpumpkin.getBlock())
         {
-            if (decayLevel > 0 && this.world.getBlockState(pos).getValue(BlockBurningPumpkin.LIT))
+            if (decayLevel > 0 && this.world.getBlockState(pos).get(BurningPumpkinBlock.LIT))
             {
                 decayTimer++;
 
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-                if (decayTimer > ModConfig.decayRate)
+                if (decayTimer > BurningTorchConfig.GENERAL.decayRate.get())
                 {
                     if (decayLevel > 0)
                     {
@@ -71,7 +91,7 @@ public class PumpkinTorchTE extends TileEntity implements ITickable
             else if (decayLevel == 0)
             {
                 this.world.removeTileEntity(pos);
-                this.world.setBlockToAir(pos);
+                this.world.removeBlock(pos, false);
                 decayTimer = 0;
             }
         }
@@ -81,42 +101,16 @@ public class PumpkinTorchTE extends TileEntity implements ITickable
         }
     }
 
-    public int getDecayLevel()
-    {
-        return this.decayLevel;
-    }
-
-    public void setDecayLevel(int decayLevel)
-    {
-        this.decayLevel = decayLevel;
-        updateBlock();
-    }
-
     @Override
-    @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket()
+    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
     {
-        return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
-    }
-
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-        return this.writeToNBT(new NBTTagCompound());
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
-    {
-        readFromNBT(pkt.getNbtCompound());
+        deserializeNBT(pkt.getNbtCompound());
         updateBlock();
     }
 
     private void updateBlock()
     {
-        this.world.markBlockRangeForRenderUpdate(pos, pos);
-        this.world.notifyBlockUpdate(pos, this.world.getBlockState(pos), this.world.getBlockState(pos), 0);
-        this.world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
+        this.world.markForRerender(pos);
         markDirty();
     }
 }

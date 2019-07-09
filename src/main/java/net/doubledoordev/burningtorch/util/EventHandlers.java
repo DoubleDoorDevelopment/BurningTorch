@@ -1,50 +1,57 @@
 package net.doubledoordev.burningtorch.util;
 
-import java.util.Map;
-
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.MaterialColor;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.event.world.BlockEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.registries.IForgeRegistryModifiable;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 
-import net.doubledoordev.burningtorch.ModConfig;
+import net.doubledoordev.burningtorch.blocks.BlockHolder;
+import net.doubledoordev.burningtorch.blocks.BurningPumpkinBlock;
+import net.doubledoordev.burningtorch.blocks.BurningTorchBlock;
+import net.doubledoordev.burningtorch.items.ItemCharredTorchRemains;
+import net.doubledoordev.burningtorch.tileentities.PumpkinTorchTE;
+import net.doubledoordev.burningtorch.tileentities.TorchTE;
 
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandlers
 {
     @SubscribeEvent
-    public void blockDestroy(BlockEvent.HarvestDropsEvent event)
+    public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
     {
-        //TODO: Add jackolanterns to this.
-        if (event.getState().getBlock() == Blocks.TORCH && ModConfig.replaceVanillaTorchDrops || event.getState().getBlock() == Blocks.LIT_PUMPKIN && ModConfig.replaceVanillaPumpkinDrops)
-        {
-            event.getDrops().clear();
-            for (Map.Entry<String, Integer> entry : ModConfig.vanillaDrops.entrySet())
-            {
-                event.getDrops().add(new ItemStack(Item.getByNameOrId(entry.getKey()), entry.getValue()));
-            }
-            event.setDropChance(ModConfig.dropChance.floatValue());
-        }
+        blockRegistryEvent.getRegistry().registerAll(
+                new BurningTorchBlock(Block.Properties.create(Material.MISCELLANEOUS)
+                        .doesNotBlockMovement()
+                        .hardnessAndResistance(0)
+                        .sound(SoundType.WOOD)
+                        .tickRandomly())
+                        .setRegistryName("burningtorch"),
+                new BurningPumpkinBlock(Block.Properties.create(Material.GOURD, MaterialColor.ADOBE).hardnessAndResistance(1.0F).sound(SoundType.WOOD)).setRegistryName("burningpumpkin")
+        );
     }
 
     @SubscribeEvent
-    public void removeRecipe(RegistryEvent.Register<IRecipe> event)
+    public static void onRegisterItem(final RegistryEvent.Register<Item> event)
     {
-        ResourceLocation torch = new ResourceLocation("minecraft:torch");
-        ResourceLocation pumpkin = new ResourceLocation("minecraft:lit_pumpkin");
-        IForgeRegistryModifiable modRegistry = (IForgeRegistryModifiable) event.getRegistry();
-        if (ModConfig.removeVanillaTorchRecipe)
-        {
-            modRegistry.remove(torch);
-        }
-        if (ModConfig.removeVanillaJackOLantenRecipe)
-        {
-            modRegistry.remove(pumpkin);
-        }
+        event.getRegistry().registerAll(
+                new BlockItem(BlockHolder.burningtorch, (new Item.Properties()).group(ItemGroup.DECORATIONS)).setRegistryName("burningtorch"),
+                new BlockItem(BlockHolder.burningpumpkin, (new Item.Properties()).group(ItemGroup.DECORATIONS)).setRegistryName("burningpumpkin"),
+                new ItemCharredTorchRemains(new Item.Properties().group(ItemGroup.MATERIALS)).setRegistryName("charredtorchremains")
+        );
     }
 
+    @SubscribeEvent
+    public static void onRegisterTileEntityType(final RegistryEvent.Register<TileEntityType<?>> event)
+    {
+        event.getRegistry().registerAll(
+                TileEntityType.Builder.create(TorchTE::new, BlockHolder.burningtorch).build(null).setRegistryName("torchte"),
+                TileEntityType.Builder.create(PumpkinTorchTE::new, BlockHolder.burningpumpkin).build(null).setRegistryName("pumpkintorchte")
+        );
+    }
 }

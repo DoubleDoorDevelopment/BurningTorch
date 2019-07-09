@@ -1,91 +1,257 @@
 {
   "forge_marker": 1,
   "variants": {
-    "normal": {"model": "burningtorch:burningtorch"},
-    "decay=5,direction=up,lit=true": { "model": "burningtorch:burningtorch" },
-    "decay=5,direction=down,lit=true": { "model": "burningtorch:burningtorch" },
-    "decay=5,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall" },
-    "decay=5,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 90 },
-    "decay=5,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 180 },
-    "decay=5,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall", "y": 270 },
-
-    "decay=4,direction=up,lit=true": { "model": "burningtorch:burningtorch_4" },
-    "decay=4,direction=down,lit=true": { "model": "burningtorch:burningtorch" },
-    "decay=4,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall_4" },
-    "decay=4,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall_4", "y": 90 },
-    "decay=4,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall_4", "y": 180 },
-    "decay=4,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall_4", "y": 270 },
-
-    "decay=3,direction=up,lit=true": { "model": "burningtorch:burningtorch_3" },
-    "decay=3,direction=down,lit=true": { "model": "burningtorch:burningtorch_3" },
-    "decay=3,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall_3" },
-    "decay=3,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall_3", "y": 90 },
-    "decay=3,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall_3", "y": 180 },
-    "decay=3,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall_3", "y": 270 },
-
-    "decay=2,direction=up,lit=true": { "model": "burningtorch:burningtorch_2" },
-    "decay=2,direction=down,lit=true": { "model": "burningtorch:burningtorch_2" },
-    "decay=2,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall_2" },
-    "decay=2,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall_2", "y": 90 },
-    "decay=2,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall_2", "y": 180 },
-    "decay=2,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall_2", "y": 270 },
-
-    "decay=1,direction=up,lit=true": { "model": "burningtorch:burningtorch_1" },
-    "decay=1,direction=down,lit=true": { "model": "burningtorch:burningtorch_1" },
-    "decay=1,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall_1" },
-    "decay=1,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 90 },
-    "decay=1,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 180 },
-    "decay=1,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 270 },
-
-    "decay=0,direction=up,lit=true": { "model": "burningtorch:burningtorch_0" },
-    "decay=0,direction=down,lit=true": { "model": "burningtorch:burningtorch_0" },
-    "decay=0,direction=east,lit=true": { "model": "burningtorch:burningtorch_wall_1" },
-    "decay=0,direction=south,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 90 },
-    "decay=0,direction=west,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 180 },
-    "decay=0,direction=north,lit=true": { "model": "burningtorch:burningtorch_wall_1", "y": 270 },
-
-    "decay=5,direction=up,lit=false": { "model": "burningtorch:burningtorch_extinguished" },
-    "decay=5,direction=down,lit=false": { "model": "burningtorch:burningtorch_extinguished" },
-    "decay=5,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_extinguished" },
-    "decay=5,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_extinguished", "y": 90 },
-    "decay=5,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_extinguished", "y": 180 },
-    "decay=5,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_extinguished", "y": 270 },
-
-    "decay=4,direction=up,lit=false": { "model": "burningtorch:burningtorch_4_extinguished" },
-    "decay=4,direction=down,lit=false": { "model": "burningtorch:burningtorch_4_extinguished" },
-    "decay=4,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_4_extinguished" },
-    "decay=4,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_4_extinguished", "y": 90 },
-    "decay=4,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_4_extinguished", "y": 180 },
-    "decay=4,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_4_extinguished", "y": 270 },
-
-    "decay=3,direction=up,lit=false": { "model": "burningtorch:burningtorch_3_extinguished" },
-    "decay=3,direction=down,lit=false": { "model": "burningtorch:burningtorch_3_extinguished" },
-    "decay=3,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_3_extinguished" },
-    "decay=3,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_3_extinguished", "y": 90 },
-    "decay=3,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_3_extinguished", "y": 180 },
-    "decay=3,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_3_extinguished", "y": 270 },
-
-    "decay=2,direction=up,lit=false": { "model": "burningtorch:burningtorch_2_extinguished" },
-    "decay=2,direction=down,lit=false": { "model": "burningtorch:burningtorch_2_extinguished" },
-    "decay=2,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_2_extinguished" },
-    "decay=2,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_2_extinguished", "y": 90 },
-    "decay=2,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_2_extinguished", "y": 180 },
-    "decay=2,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_2_extinguished", "y": 270 },
-
-    "decay=1,direction=up,lit=false": { "model": "burningtorch:burningtorch_1_extinguished" },
-    "decay=1,direction=down,lit=false": { "model": "burningtorch:burningtorch_1_extinguished" },
-    "decay=1,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished" },
-    "decay=1,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 90 },
-    "decay=1,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 180 },
-    "decay=1,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 270 },
-
-    "decay=0,direction=up,lit=false": { "model": "burningtorch:burningtorch_0_extinguished" },
-    "decay=0,direction=down,lit=false": { "model": "burningtorch:burningtorch_0_extinguished" },
-    "decay=0,direction=east,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished" },
-    "decay=0,direction=south,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 90 },
-    "decay=0,direction=west,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 180 },
-    "decay=0,direction=north,lit=false": { "model": "burningtorch:burningtorch_wall_1_extinguished", "y": 270 },
-
-    "inventory": [{"model": "burningtorch:burningtorch"}]
+    "decay=5,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch"
+    },
+    "decay=5,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch"
+    },
+    "decay=5,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall"
+    },
+    "decay=5,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall",
+      "y": 90
+    },
+    "decay=5,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall",
+      "y": 180
+    },
+    "decay=5,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall",
+      "y": 270
+    },
+    "decay=4,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch_4"
+    },
+    "decay=4,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch"
+    },
+    "decay=4,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall_4"
+    },
+    "decay=4,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall_4",
+      "y": 90
+    },
+    "decay=4,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall_4",
+      "y": 180
+    },
+    "decay=4,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall_4",
+      "y": 270
+    },
+    "decay=3,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch_3"
+    },
+    "decay=3,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch_3"
+    },
+    "decay=3,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall_3"
+    },
+    "decay=3,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall_3",
+      "y": 90
+    },
+    "decay=3,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall_3",
+      "y": 180
+    },
+    "decay=3,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall_3",
+      "y": 270
+    },
+    "decay=2,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch_2"
+    },
+    "decay=2,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch_2"
+    },
+    "decay=2,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall_2"
+    },
+    "decay=2,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall_2",
+      "y": 90
+    },
+    "decay=2,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall_2",
+      "y": 180
+    },
+    "decay=2,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall_2",
+      "y": 270
+    },
+    "decay=1,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch_1"
+    },
+    "decay=1,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch_1"
+    },
+    "decay=1,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1"
+    },
+    "decay=1,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 90
+    },
+    "decay=1,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 180
+    },
+    "decay=1,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 270
+    },
+    "decay=0,facing=up,lit=true": {
+      "model": "burningtorch:burningtorch_0"
+    },
+    "decay=0,facing=down,lit=true": {
+      "model": "burningtorch:burningtorch_0"
+    },
+    "decay=0,facing=east,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1"
+    },
+    "decay=0,facing=south,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 90
+    },
+    "decay=0,facing=west,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 180
+    },
+    "decay=0,facing=north,lit=true": {
+      "model": "burningtorch:burningtorch_wall_1",
+      "y": 270
+    },
+    "decay=5,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_extinguished"
+    },
+    "decay=5,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_extinguished"
+    },
+    "decay=5,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_extinguished"
+    },
+    "decay=5,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_extinguished",
+      "y": 90
+    },
+    "decay=5,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_extinguished",
+      "y": 180
+    },
+    "decay=5,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_extinguished",
+      "y": 270
+    },
+    "decay=4,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_4_extinguished"
+    },
+    "decay=4,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_4_extinguished"
+    },
+    "decay=4,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_4_extinguished"
+    },
+    "decay=4,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_4_extinguished",
+      "y": 90
+    },
+    "decay=4,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_4_extinguished",
+      "y": 180
+    },
+    "decay=4,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_4_extinguished",
+      "y": 270
+    },
+    "decay=3,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_3_extinguished"
+    },
+    "decay=3,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_3_extinguished"
+    },
+    "decay=3,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_3_extinguished"
+    },
+    "decay=3,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_3_extinguished",
+      "y": 90
+    },
+    "decay=3,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_3_extinguished",
+      "y": 180
+    },
+    "decay=3,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_3_extinguished",
+      "y": 270
+    },
+    "decay=2,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_2_extinguished"
+    },
+    "decay=2,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_2_extinguished"
+    },
+    "decay=2,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_2_extinguished"
+    },
+    "decay=2,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_2_extinguished",
+      "y": 90
+    },
+    "decay=2,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_2_extinguished",
+      "y": 180
+    },
+    "decay=2,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_2_extinguished",
+      "y": 270
+    },
+    "decay=1,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_1_extinguished"
+    },
+    "decay=1,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_1_extinguished"
+    },
+    "decay=1,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished"
+    },
+    "decay=1,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 90
+    },
+    "decay=1,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 180
+    },
+    "decay=1,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 270
+    },
+    "decay=0,facing=up,lit=false": {
+      "model": "burningtorch:burningtorch_0_extinguished"
+    },
+    "decay=0,facing=down,lit=false": {
+      "model": "burningtorch:burningtorch_0_extinguished"
+    },
+    "decay=0,facing=east,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished"
+    },
+    "decay=0,facing=south,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 90
+    },
+    "decay=0,facing=west,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 180
+    },
+    "decay=0,facing=north,lit=false": {
+      "model": "burningtorch:burningtorch_wall_1_extinguished",
+      "y": 270
+    }
   }
 }
