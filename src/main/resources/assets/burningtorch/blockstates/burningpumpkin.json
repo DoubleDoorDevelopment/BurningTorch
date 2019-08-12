@@ -2,256 +2,256 @@
   "forge_marker": 1,
   "variants": {
     "decay=5,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=5,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=5,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=5,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=5,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=5,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=4,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=4,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=4,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=4,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=4,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=4,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=3,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=3,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=3,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=3,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=3,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=3,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=2,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=2,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=2,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=2,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=2,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=2,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=1,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=1,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=1,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=1,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=1,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=1,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=0,facing=up,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=0,facing=down,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=0,facing=east,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 90
     },
     "decay=0,facing=south,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 180
     },
     "decay=0,facing=west,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern",
+      "model": "block/jack_o_lantern",
       "y": 270
     },
     "decay=0,facing=north,lit=true,waterlogged=false": {
-      "model": "jack_o_lantern"
+      "model": "block/jack_o_lantern"
     },
     "decay=5,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=5,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=5,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=5,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=5,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=5,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=4,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=4,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=4,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=4,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=4,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=4,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=3,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=3,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=3,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=3,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=3,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=3,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=2,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=2,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=2,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=2,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=2,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=2,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=1,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=1,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=1,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=1,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=1,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=1,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=0,facing=up,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=0,facing=down,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     },
     "decay=0,facing=east,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 90
     },
     "decay=0,facing=south,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 180
     },
     "decay=0,facing=west,lit=false": {
-      "model": "pumpkin",
+      "model": "block/pumpkin",
       "y": 270
     },
     "decay=0,facing=north,lit=false": {
-      "model": "pumpkin"
+      "model": "block/pumpkin"
     }
   }
 }

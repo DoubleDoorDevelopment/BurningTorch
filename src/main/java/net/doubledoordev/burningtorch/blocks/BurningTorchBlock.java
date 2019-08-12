@@ -41,10 +41,10 @@ public class BurningTorchBlock extends Block
 
     private static final VoxelShape STANDING = Block.makeCuboidShape(6, 0, 6, 10, 13, 10);
 
-    private static final VoxelShape TORCH_NORTH = Block.makeCuboidShape(10, 3, 6, 6, 16, 16);
+    private static final VoxelShape TORCH_NORTH = Block.makeCuboidShape(10, 3, 10, 6, 16, 16);
     private static final VoxelShape TORCH_EAST = Block.makeCuboidShape(0, 3, 10, 6, 16, 6);
     private static final VoxelShape TORCH_SOUTH = Block.makeCuboidShape(6, 3, 0, 10, 16, 6);
-    private static final VoxelShape TORCH_WEST = Block.makeCuboidShape(6, 3, 6, 0, 16, 10);
+    private static final VoxelShape TORCH_WEST = Block.makeCuboidShape(16, 3, 6, 10, 16, 10);
 
     //int lightLevel = Integer.parseInt(null);
 

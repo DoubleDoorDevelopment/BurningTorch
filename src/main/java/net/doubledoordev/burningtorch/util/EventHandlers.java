@@ -32,7 +32,10 @@ public class EventHandlers
                         .sound(SoundType.WOOD)
                         .tickRandomly())
                         .setRegistryName("burningtorch"),
-                new BurningPumpkinBlock(Block.Properties.create(Material.GOURD, MaterialColor.ADOBE).hardnessAndResistance(1.0F).sound(SoundType.WOOD)).setRegistryName("burningpumpkin")
+                new BurningPumpkinBlock(Block.Properties.create(Material.GOURD, MaterialColor.ADOBE)
+                        .hardnessAndResistance(1.0F)
+                        .sound(SoundType.WOOD))
+                        .setRegistryName("burningpumpkin")
         );
     }
 

@@ -110,7 +110,7 @@ public class PumpkinTorchTE extends TileEntity implements ITickableTileEntity
 
     private void updateBlock()
     {
-        this.world.markForRerender(pos);
+        //this.world.markForRerender(pos);
         markDirty();
     }
 }
