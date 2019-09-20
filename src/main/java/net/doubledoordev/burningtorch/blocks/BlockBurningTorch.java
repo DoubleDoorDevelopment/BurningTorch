@@ -66,10 +66,6 @@ public class BlockBurningTorch extends Block
         else
             setUnlocalizedName("burningtorchextinguished");
         setRegistryName(MOD_ID, "burningtorch");
-        if (torchesStartFireWhenLit)
-            setTickRandomly(true);
-        else
-            setTickRandomly(false);
     }
 
     // Handles the relighting of torches and a bunch of other stuff.
@@ -1073,7 +1069,7 @@ public class BlockBurningTorch extends Block
     @Override
     public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
     {
-        if (worldIn.getGameRules().getBoolean("doFireTick"))
+        if (worldIn.getGameRules().getBoolean("doFireTick") && torchesStartFireWhenLit)
         {
             int i = rand.nextInt(3);
 
