@@ -21,7 +21,7 @@ public class ModConfig
     public static int rainUpdateRate = 40;
 
     @Config.LangKey("burningtorch.config.burnrate")
-    @Config.Comment("How many ticks between decay levels. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour")
+    @Config.Comment("How many ticks between decay levels. 20 ticks = 1 second, 1200 ticks = 1 minute, 72000 ticks = 1 hour. Use 0 to disable.")
     @Config.RangeInt(min = 0, max = Integer.MAX_VALUE)
     public static int decayRate = 18000;
 

@@ -72,15 +72,17 @@ public class TorchTE extends TileEntity implements ITickable
                 }
 
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-                if (decayTimer > ModConfig.decayRate)
-                {
-                    if (decayLevel > 0)
+                // If the decay rate is set to 0 disable decay.
+                if (!(ModConfig.decayRate == 0))
+                    if (decayTimer > ModConfig.decayRate)
                     {
-                        this.decayLevel = decayLevel - 1;
-                        updateBlock();
-                        decayTimer = 0;
+                        if (decayLevel > 0)
+                        {
+                            this.decayLevel = decayLevel - 1;
+                            updateBlock();
+                            decayTimer = 0;
+                        }
                     }
-                }
             }
             else if (decayLevel == 0)
             {
@@ -108,17 +110,20 @@ public class TorchTE extends TileEntity implements ITickable
 
     @Override
     @Nullable
-    public SPacketUpdateTileEntity getUpdatePacket() {
+    public SPacketUpdateTileEntity getUpdatePacket()
+    {
         return new SPacketUpdateTileEntity(this.pos, 3, this.getUpdateTag());
     }
 
     @Override
-    public NBTTagCompound getUpdateTag() {
+    public NBTTagCompound getUpdateTag()
+    {
         return this.writeToNBT(new NBTTagCompound());
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt)
+    {
         readFromNBT(pkt.getNbtCompound());
         updateBlock();
     }
@@ -127,7 +132,7 @@ public class TorchTE extends TileEntity implements ITickable
     {
         this.world.markBlockRangeForRenderUpdate(pos, pos);
         this.world.notifyBlockUpdate(pos, this.world.getBlockState(pos), this.world.getBlockState(pos), 0);
-        this.world.scheduleBlockUpdate(pos, this.getBlockType(),0,0);
+        this.world.scheduleBlockUpdate(pos, this.getBlockType(), 0, 0);
         markDirty();
     }
 
