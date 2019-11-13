@@ -182,6 +182,11 @@ public class ModConfig
     @Config.Comment("Toggle whither torches burn entities when lit. true=burn false=no burn")
     public static boolean torchesBurnEntities = true;
 
+    @Config.LangKey("burningtorch.config.torch.attackswithfire")
+    @Config.Comment("Chance an attack will light the entity on fire. 0 to disable")
+    @Config.RangeInt(min = 0, max = 100)
+    public static int fireAttackChance = 50;
+
     @Mod.EventBusSubscriber
     public static class SyncConfig
     {
