@@ -46,8 +46,6 @@ public class BurningTorchBlock extends Block
     private static final VoxelShape TORCH_SOUTH = Block.makeCuboidShape(6, 3, 0, 10, 16, 6);
     private static final VoxelShape TORCH_WEST = Block.makeCuboidShape(16, 3, 6, 10, 16, 10);
 
-    //int lightLevel = Integer.parseInt(null);
-
     public BurningTorchBlock(Block.Properties properties)
     {
         super(properties);
@@ -59,27 +57,23 @@ public class BurningTorchBlock extends Block
         );
     }
 
-    // Changes the lighting level based off the LIT blockstate property.
-    //TODO: Not working.
-    @Override
-    public int getLightValue(BlockState state)
+    public static int setLightValue(BlockState state)
     {
         if (state.get(LIT))
         {
-            return 15;
-//            switch (state.get(DECAY))
-//            {
-//                case 5:
-//                   return 15;
-//                case 4:
-//                    return 13;
-//                case 3:
-//                    return 10;
-//                case 2:
-//                    return 7;
-//                case 1:
-//                    return 4;
-//            }
+            switch (state.get(DECAY))
+            {
+                case 5:
+                    return BurningTorchConfig.GENERAL.torchlightLevel5.get();
+                case 4:
+                    return BurningTorchConfig.GENERAL.torchlightLevel4.get();
+                case 3:
+                    return BurningTorchConfig.GENERAL.torchlightLevel3.get();
+                case 2:
+                    return BurningTorchConfig.GENERAL.torchlightLevel2.get();
+                case 1:
+                    return BurningTorchConfig.GENERAL.torchlightLevel1.get();
+            }
         }
         return 0;
     }

@@ -2,6 +2,7 @@ package net.doubledoordev.burningtorch.tileentities;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -29,9 +30,9 @@ public class PumpkinTorchTE extends TileEntity implements ITickableTileEntity
     }
 
     @Override
-    public void read(CompoundNBT compound)
+    public void func_230337_a_(BlockState state, CompoundNBT compound)
     {
-        super.read(compound);
+        super.func_230337_a_(state, compound);
         decayLevel = compound.getInt("decaylevel");
         decayTimer = compound.getInt("decayTimer");
     }

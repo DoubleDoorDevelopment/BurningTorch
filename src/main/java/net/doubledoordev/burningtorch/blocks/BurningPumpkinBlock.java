@@ -6,8 +6,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Items;
 import net.minecraft.state.BooleanProperty;
@@ -46,8 +46,29 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
         );
     }
 
+    public static int setLightValue(BlockState state)
+    {
+        if (state.get(LIT))
+        {
+            switch (state.get(DECAY))
+            {
+                case 5:
+                    return BurningTorchConfig.GENERAL.torchlightLevel5.get();
+                case 4:
+                    return BurningTorchConfig.GENERAL.torchlightLevel4.get();
+                case 3:
+                    return BurningTorchConfig.GENERAL.torchlightLevel3.get();
+                case 2:
+                    return BurningTorchConfig.GENERAL.torchlightLevel2.get();
+                case 1:
+                    return BurningTorchConfig.GENERAL.torchlightLevel1.get();
+            }
+        }
+        return 0;
+    }
+
     @Override
-    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, IFluidState fluidStateIn)
+    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn)
     {
         if (!state.get(BlockStateProperties.WATERLOGGED) && fluidStateIn.getFluid() == Fluids.WATER)
         {
@@ -65,30 +86,6 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
         {
             return false;
         }
-    }
-
-    // Changes the lighting level based off the LIT blockstate property.
-    @Override
-    public int getLightValue(BlockState state)
-    {
-        if (state.get(LIT))
-        {
-            return 15;
-//            switch (state.get(DECAY))
-//            {
-//                case 5:
-//                   return 15;
-//                case 4:
-//                    return 13;
-//                case 3:
-//                    return 10;
-//                case 2:
-//                    return 7;
-//                case 1:
-//                    return 4;
-//            }
-        }
-        return 0;
     }
 
     @Override
@@ -168,7 +165,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
     }
 
     @Override
-    public IFluidState getFluidState(BlockState state)
+    public FluidState getFluidState(BlockState state)
     {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }

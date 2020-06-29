@@ -3,9 +3,8 @@ package net.doubledoordev.burningtorch.tileentities;
 import java.util.Random;
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.FireBlock;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -41,9 +40,9 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
     }
 
     @Override
-    public void read(CompoundNBT compound)
+    public void func_230337_a_(BlockState state, CompoundNBT compound)
     {
-        super.read(compound);
+        super.func_230337_a_(state, compound);
         decayLevel = compound.getInt("decaylevel");
         decayTimer = compound.getInt("decayTimer");
     }
@@ -153,7 +152,7 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
                 // find a random spot.
                 firePos = firePos.add(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
 
-                BlockState fireState = ((FireBlock) Blocks.FIRE).getStateForPlacement(world.getWorld(), pos);
+                BlockState fireState = AbstractFireBlock.func_235326_a_(world, pos);
 
                 if (firePos.getY() >= 0 && firePos.getY() < world.getHeight())
                 {

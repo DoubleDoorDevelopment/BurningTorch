@@ -31,12 +31,14 @@ public class EventHandlers
     {
         blockRegistryEvent.getRegistry().registerAll(
                 new BurningTorchBlock(Block.Properties.create(Material.MISCELLANEOUS)
+                        .func_235838_a_(BurningTorchBlock::setLightValue)
                         .doesNotBlockMovement()
                         .hardnessAndResistance(0)
                         .sound(SoundType.WOOD)
                         .tickRandomly())
                         .setRegistryName("burningtorch"),
                 new BurningPumpkinBlock(Block.Properties.create(Material.GOURD, MaterialColor.ADOBE)
+                        .func_235838_a_(BurningPumpkinBlock::setLightValue)
                         .hardnessAndResistance(1.0F)
                         .sound(SoundType.WOOD))
                         .setRegistryName("burningpumpkin")
