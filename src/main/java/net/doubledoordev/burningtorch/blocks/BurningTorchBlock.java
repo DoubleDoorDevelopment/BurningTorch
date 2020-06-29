@@ -240,15 +240,6 @@ public class BurningTorchBlock extends Block
         }
     }
 
-    /**
-     * Gets the render layer this block will render on. SOLID for solid blocks, CUTOUT or CUTOUT_MIPPED for on-off
-     * transparency (glass, reeds), TRANSLUCENT for fully blended transparency (stained glass)
-     */
-    public BlockRenderLayer getRenderLayer()
-    {
-        return BlockRenderLayer.CUTOUT;
-    }
-
     // Stole from wall torches.
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos)
     {
@@ -260,7 +251,7 @@ public class BurningTorchBlock extends Block
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         TorchTE torchTE = (TorchTE) worldIn.getTileEntity(pos);
 
@@ -271,7 +262,7 @@ public class BurningTorchBlock extends Block
             {
                 worldIn.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.3F, 0.8F);
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, true));
-                return true;
+                return ActionResultType.SUCCESS;
             }
         }
 
@@ -281,7 +272,7 @@ public class BurningTorchBlock extends Block
             {
                 worldIn.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, false));
-                return true;
+                return ActionResultType.SUCCESS;
             }
         }
 
@@ -298,7 +289,7 @@ public class BurningTorchBlock extends Block
                     {
                         player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
                     }
-                    return true;
+                    return ActionResultType.SUCCESS;
                 }
                 else
                 {
@@ -307,7 +298,7 @@ public class BurningTorchBlock extends Block
                     {
                         player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
                     }
-                    return true;
+                    return ActionResultType.SUCCESS;
                 }
             }
         }
@@ -318,12 +309,12 @@ public class BurningTorchBlock extends Block
             {
                 worldIn.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 0.2F, 0.8F);
                 torchTE.setDecayLevel(state.get(DECAY) - 1);
-                return true;
+                return ActionResultType.SUCCESS;
             }
             else
                 player.sendStatusMessage(new TranslationTextComponent("burningtorch.interact.shears.low"), true);
         }
-        return false;
+        return ActionResultType.FAIL;
     }
 
     //Stole from wall torches, Modified to work with a single block.

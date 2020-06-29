@@ -16,10 +16,7 @@ import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -95,7 +92,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
     }
 
     @Override
-    public boolean onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         PumpkinTorchTE pumpkinTE = (PumpkinTorchTE) worldIn.getTileEntity(pos);
 
@@ -105,7 +102,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
             {
                 worldIn.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.3F, 0.8F);
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, true));
-                return true;
+                return ActionResultType.SUCCESS;
             }
         }
 
@@ -115,7 +112,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
             {
                 worldIn.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
                 worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, false));
-                return true;
+                return ActionResultType.SUCCESS;
             }
         }
 
@@ -132,7 +129,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
                     {
                         player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
                     }
-                    return true;
+                    return ActionResultType.SUCCESS;
                 }
                 else
                 {
@@ -141,7 +138,7 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
                     {
                         player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
                     }
-                    return true;
+                    return ActionResultType.SUCCESS;
                 }
             }
         }
@@ -152,12 +149,12 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
             {
                 worldIn.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 0.2F, 0.8F);
                 pumpkinTE.setDecayLevel(state.get(DECAY) - 1);
-                return true;
+                return ActionResultType.SUCCESS;
             }
             else
                 player.sendStatusMessage(new TranslationTextComponent("burningtorch.interact.shears.low"), true);
         }
-        return false;
+        return ActionResultType.FAIL;
     }
 
     @Override

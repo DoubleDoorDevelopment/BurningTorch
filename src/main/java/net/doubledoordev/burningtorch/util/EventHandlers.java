@@ -4,13 +4,17 @@ import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import net.doubledoordev.burningtorch.blocks.BlockHolder;
 import net.doubledoordev.burningtorch.blocks.BurningPumpkinBlock;
@@ -56,5 +60,11 @@ public class EventHandlers
                 TileEntityType.Builder.create(TorchTE::new, BlockHolder.burningtorch).build(null).setRegistryName("torchte"),
                 TileEntityType.Builder.create(PumpkinTorchTE::new, BlockHolder.burningpumpkin).build(null).setRegistryName("pumpkintorchte")
         );
+    }
+
+    @SubscribeEvent
+    public static void clientRendering(FMLClientSetupEvent event)
+    {
+        DeferredWorkQueue.runLater(() -> RenderTypeLookup.setRenderLayer(BlockHolder.burningtorch, RenderType.getCutoutMipped()));
     }
 }
