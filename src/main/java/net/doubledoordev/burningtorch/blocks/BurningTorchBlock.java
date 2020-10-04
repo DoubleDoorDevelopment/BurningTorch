@@ -241,7 +241,7 @@ public class BurningTorchBlock extends Block
         BlockPos blockpos = pos.offset(direction.getOpposite());
         BlockState blockstate = worldIn.getBlockState(blockpos);
 
-        return Block.hasSolidSide(blockstate, worldIn, blockpos, direction);
+        return blockstate.isSolidSide(worldIn, blockpos, direction);
     }
 
     @Override

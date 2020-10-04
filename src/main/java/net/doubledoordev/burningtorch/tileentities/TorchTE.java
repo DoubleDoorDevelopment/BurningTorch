@@ -12,7 +12,6 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import net.doubledoordev.burningtorch.BurningTorchConfig;
@@ -148,7 +147,6 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
             // if the random int is greater than the config.
             if (randomInt < BurningTorchConfig.GENERAL.percentToStartFire.get() && tickCounter == BurningTorchConfig.GENERAL.delayBetweenFire.get())
             {
-                IWorld iWorld = world.getWorld();
                 // find a random spot.
                 firePos = firePos.add(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
 
@@ -159,7 +157,7 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
                     // Check the space around us for a burnable block.
                     if (UtilMethods.isSurroundingBlockFlammable(world, firePos))
                     {
-                        if (fireState.isValidPosition(iWorld, firePos))
+                        if (fireState.isValidPosition(world, firePos))
                         {
                             // set it on fire.
                             world.setBlockState(firePos, fireState, 11);
