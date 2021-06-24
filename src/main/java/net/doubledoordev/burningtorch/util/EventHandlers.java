@@ -1,5 +1,6 @@
 package net.doubledoordev.burningtorch.util;
 
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
@@ -30,16 +31,15 @@ public class EventHandlers
     public static void onBlocksRegistry(final RegistryEvent.Register<Block> blockRegistryEvent)
     {
         blockRegistryEvent.getRegistry().registerAll(
-                new BurningTorchBlock(Block.Properties.create(Material.MISCELLANEOUS)
-                        .func_235838_a_(BurningTorchBlock::setLightValue)
-                        .doesNotBlockMovement()
-                        .hardnessAndResistance(0)
+                new BurningTorchBlock(AbstractBlock.Properties.of(Material.DECORATION)
+                        .noCollission()
+                        .instabreak()
                         .sound(SoundType.WOOD)
-                        .tickRandomly())
+                        .randomTicks())
                         .setRegistryName("burningtorch"),
-                new BurningPumpkinBlock(Block.Properties.create(Material.GOURD, MaterialColor.ADOBE)
-                        .func_235838_a_(BurningPumpkinBlock::setLightValue)
-                        .hardnessAndResistance(1.0F)
+
+                new BurningPumpkinBlock(AbstractBlock.Properties.of(Material.VEGETABLE, MaterialColor.COLOR_ORANGE)
+                        .strength(1.0F)
                         .sound(SoundType.WOOD))
                         .setRegistryName("burningpumpkin")
         );
@@ -49,9 +49,9 @@ public class EventHandlers
     public static void onRegisterItem(final RegistryEvent.Register<Item> event)
     {
         event.getRegistry().registerAll(
-                new BlockItem(BlockHolder.burningtorch, (new Item.Properties()).group(ItemGroup.DECORATIONS)).setRegistryName("burningtorch"),
-                new BlockItem(BlockHolder.burningpumpkin, (new Item.Properties()).group(ItemGroup.DECORATIONS)).setRegistryName("burningpumpkin"),
-                new ItemCharredTorchRemains(new Item.Properties().group(ItemGroup.MATERIALS)).setRegistryName("charredtorchremains")
+                new BlockItem(BlockHolder.burningtorch, (new Item.Properties()).tab(ItemGroup.TAB_DECORATIONS)).setRegistryName("burningtorch"),
+                new BlockItem(BlockHolder.burningpumpkin, (new Item.Properties()).tab(ItemGroup.TAB_DECORATIONS)).setRegistryName("burningpumpkin"),
+                new ItemCharredTorchRemains(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)).setRegistryName("charredtorchremains")
         );
     }
 
@@ -59,14 +59,14 @@ public class EventHandlers
     public static void onRegisterTileEntityType(final RegistryEvent.Register<TileEntityType<?>> event)
     {
         event.getRegistry().registerAll(
-                TileEntityType.Builder.create(TorchTE::new, BlockHolder.burningtorch).build(null).setRegistryName("torchte"),
-                TileEntityType.Builder.create(PumpkinTorchTE::new, BlockHolder.burningpumpkin).build(null).setRegistryName("pumpkintorchte")
+                TileEntityType.Builder.of(TorchTE::new, BlockHolder.burningtorch).build(null).setRegistryName("torchte"),
+                TileEntityType.Builder.of(PumpkinTorchTE::new, BlockHolder.burningpumpkin).build(null).setRegistryName("pumpkintorchte")
         );
     }
 
     @SubscribeEvent
     public static void clientRendering(FMLClientSetupEvent event)
     {
-        DeferredWorkQueue.runLater(() -> RenderTypeLookup.setRenderLayer(BlockHolder.burningtorch, RenderType.getCutoutMipped()));
+        DeferredWorkQueue.runLater(() -> RenderTypeLookup.setRenderLayer(BlockHolder.burningtorch, RenderType.cutoutMipped()));
     }
 }

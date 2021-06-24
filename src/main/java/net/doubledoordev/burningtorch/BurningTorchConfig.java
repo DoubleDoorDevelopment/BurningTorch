@@ -25,19 +25,10 @@ public class BurningTorchConfig
 
     public static class General
     {
-        public static List<? extends String> relightingItemList()
-        {
-            return new ArrayList<>(Arrays.asList("minecraft:flint_and_steel"));
-        }
-
-        public static List<? extends String> extinguishingingItemsList()
-        {
-            return new ArrayList<>(Arrays.asList("minecraft:bucket"));
-        }
 
         public static List<? extends String> extendingItemsList()
         {
-            return new ArrayList<>(Arrays.asList("minecraft:coal,5", "minecraft:planks,1"));
+            return new ArrayList<>(Arrays.asList("burningtorch:fuel_value_5,5", "burningtorch:fuel_value_1,1"));
         }
 
         // General stuff
@@ -45,8 +36,6 @@ public class BurningTorchConfig
         public IntValue decayRate;
         public IntValue percentToStartFire;
         public IntValue delayBetweenFire;
-        public ConfigValue<List<? extends String>> relightingItems;
-        public ConfigValue<List<? extends String>> extinguishingingItems;
         public ConfigValue<List<? extends String>> extendingItems;
         public BooleanValue shouldRainExtinguish;
         // Torch stuff
@@ -88,18 +77,8 @@ public class BurningTorchConfig
                     .translation("burningtorch.config.rainextinguish")
                     .define("shouldRainExtinguish", true);
 
-            relightingItems = builder
-                    .comment("What items can relight a torch.")
-                    .translation("burningtorch.config.itemstorelighttorches")
-                    .defineList("relightingItems", BurningTorchConfig.General.relightingItemList(), p -> p instanceof String);
-
-            extinguishingingItems = builder
-                    .comment("What items can extinguish a torch.")
-                    .translation("burningtorch.config.itemstoextinguish")
-                    .defineList("extinguishingingItems", BurningTorchConfig.General.extinguishingingItemsList(), p -> p instanceof String);
-
             extendingItems = builder
-                    .comment("What items can add more time to a torch. Number is levels added.")
+                    .comment("Item Tag lists that are valid fuel sources for torches to consume. Number is the value for every item in the list.")
                     .translation("burningtorch.config.itemstoextend")
                     .defineList("extendingItems", BurningTorchConfig.General.extendingItemsList(), p -> p instanceof String);
 

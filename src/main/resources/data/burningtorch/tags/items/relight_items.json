@@ -1,0 +1,15 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:torch",
+    "minecraft:fire_charge",
+    "minecraft:firework_rocket",
+    "minecraft:lava_bucket",
+    "minecraft:blaze_rod",
+    "minecraft:flint_and_steel",
+    "minecraft:blaze_powder",
+    "minecraft:magma_block",
+    "minecraft:dragon_breath",
+    "burningtorch:burningtorch"
+  ]
+}

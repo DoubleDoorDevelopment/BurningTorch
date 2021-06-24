@@ -1,0 +1,33 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:dirt",
+    "minecraft:coarse_dirt",
+    "minecraft:sand",
+    "minecraft:red_sand",
+    "minecraft:gravel",
+    "minecraft:wet_sponge",
+    "minecraft:melon",
+    "minecraft:bucket",
+    "minecraft:milk_bucket",
+    "minecraft:pufferfish_bucket",
+    "minecraft:salmon_bucket",
+    "minecraft:cod_bucket",
+    "minecraft:tropical_fish_bucket",
+    "minecraft:mushroom_stew",
+    "minecraft:cake",
+    "minecraft:melon_slice",
+    "minecraft:rabbit_stew",
+    "minecraft:beetroot_soup",
+    "minecraft:honey_bottle",
+    "minecraft:glass_bottle",
+    "minecraft:cauldron",
+    "minecraft:potion",
+    "minecraft:splash_potion",
+    "minecraft:lingering_potion",
+    "minecraft:bowl",
+    "minecraft:snowball",
+    "minecraft:shulker_shell",
+    "minecraft:water_bucket"
+  ]
+}

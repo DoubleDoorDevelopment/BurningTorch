@@ -9,12 +9,14 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.Items;
+import net.minecraft.item.Item;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
@@ -24,8 +26,10 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
+import net.doubledoordev.burningtorch.BurningTorch;
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 import net.doubledoordev.burningtorch.tileentities.PumpkinTorchTE;
+import net.doubledoordev.burningtorch.tileentities.TorchTE;
 
 public class BurningPumpkinBlock extends Block implements IWaterLoggable
 {
@@ -38,48 +42,49 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
     {
         super(properties);
 
-        this.setDefaultState(this.getStateContainer().getBaseState()
-                .with(LIT, true)
-                .with(DECAY, 5)
-                .with(FACING, Direction.UP)
-                .with(WATERLOGGED, false)
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(LIT, true)
+                .setValue(DECAY, 5)
+                .setValue(FACING, Direction.UP)
+                .setValue(WATERLOGGED, false)
         );
     }
 
-    public static int setLightValue(BlockState state)
+    @Override
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos)
     {
-        if (state.get(LIT))
+        if (state.getValue(LIT))
         {
-            switch (state.get(DECAY))
+            switch (state.getValue(DECAY))
             {
                 case 5:
-                    return BurningTorchConfig.GENERAL.torchlightLevel5.get();
+                    return BurningTorchConfig.GENERAL.pumpkinlightLevel5.get();
                 case 4:
-                    return BurningTorchConfig.GENERAL.torchlightLevel4.get();
+                    return BurningTorchConfig.GENERAL.pumpkinlightLevel4.get();
                 case 3:
-                    return BurningTorchConfig.GENERAL.torchlightLevel3.get();
+                    return BurningTorchConfig.GENERAL.pumpkinlightLevel3.get();
                 case 2:
-                    return BurningTorchConfig.GENERAL.torchlightLevel2.get();
+                    return BurningTorchConfig.GENERAL.pumpkinlightLevel2.get();
                 case 1:
-                    return BurningTorchConfig.GENERAL.torchlightLevel1.get();
+                    return BurningTorchConfig.GENERAL.pumpkinlightLevel1.get();
             }
         }
         return 0;
     }
 
     @Override
-    public boolean receiveFluid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn)
+    public boolean placeLiquid(IWorld worldIn, BlockPos pos, BlockState state, FluidState fluidStateIn)
     {
-        if (!state.get(BlockStateProperties.WATERLOGGED) && fluidStateIn.getFluid() == Fluids.WATER)
+        if (!state.getValue(BlockStateProperties.WATERLOGGED) && fluidStateIn.getType() == Fluids.WATER)
         {
-            boolean lit = state.get(LIT);
+            boolean lit = state.getValue(LIT);
             if (lit)
             {
-                worldIn.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                worldIn.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
 
-            worldIn.setBlockState(pos, state.with(WATERLOGGED, true).with(LIT, false), 3);
-            worldIn.getPendingFluidTicks().scheduleTick(pos, fluidStateIn.getFluid(), fluidStateIn.getFluid().getTickRate(worldIn));
+            worldIn.setBlock(pos, state.setValue(WATERLOGGED, true).setValue(LIT, false), 3);
+            worldIn.getLiquidTicks().scheduleTick(pos, fluidStateIn.getType(), fluidStateIn.getType().getTickDelay(worldIn));
             return true;
         }
         else
@@ -89,88 +94,92 @@ public class BurningPumpkinBlock extends Block implements IWaterLoggable
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        PumpkinTorchTE pumpkinTE = (PumpkinTorchTE) worldIn.getTileEntity(pos);
+        TorchTE torchTE = (TorchTE) worldIn.getBlockEntity(pos);
 
-        for (String item : BurningTorchConfig.GENERAL.relightingItems.get())
+        ITag<Item> extinguishTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MOD_ID, "extinguish_items"));
+        ITag<Item> relightTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MOD_ID, "relight_items"));
+        ITag<Item> cuttingTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MOD_ID, "cutting_items"));
+
+        Item mainHandItem = player.getMainHandItem().getItem();
+        Item offHandItem = player.getOffhandItem().getItem();
+
+        if (extinguishTag.contains(mainHandItem) || extinguishTag.contains(offHandItem))
         {
-            if (player.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || player.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && !state.get(LIT))
-            {
-                worldIn.playSound(null, pos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.3F, 0.8F);
-                worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, true));
-                return ActionResultType.SUCCESS;
-            }
+            worldIn.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
+            worldIn.setBlockAndUpdate(pos, worldIn.getBlockState(pos).setValue(LIT, false));
+            return ActionResultType.SUCCESS;
         }
 
-        for (String item : BurningTorchConfig.GENERAL.extinguishingingItems.get())
+        if (relightTag.contains(mainHandItem) || relightTag.contains(offHandItem))
         {
-            if (player.getHeldItemMainhand().getItem().getRegistryName().toString().equals(item) || player.getHeldItemOffhand().getItem().getRegistryName().toString().equals(item) && state.get(LIT))
+            worldIn.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 0.3F, 0.8F);
+            worldIn.setBlockAndUpdate(pos, worldIn.getBlockState(pos).setValue(LIT, true));
+            return ActionResultType.SUCCESS;
+        }
+
+        if (cuttingTag.contains(mainHandItem) || cuttingTag.contains(offHandItem))
+        {
+            if (state.getValue(DECAY) > 1)
             {
-                worldIn.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
-                worldIn.setBlockState(pos, worldIn.getBlockState(pos).with(LIT, false));
+                worldIn.playSound(null, pos, SoundEvents.SHEEP_SHEAR, SoundCategory.BLOCKS, 0.2F, 0.8F);
+                torchTE.setDecayLevel(state.getValue(DECAY) - 1);
                 return ActionResultType.SUCCESS;
             }
+            else
+                player.displayClientMessage(new TranslationTextComponent("burningtorch.interact.shears.low"), true);
         }
 
         for (String itemValue : BurningTorchConfig.GENERAL.extendingItems.get())
         {
-            String[] splitItemValue = itemValue.split(",");
-            if (player.getHeldItemMainhand().getItem().getRegistryName().toString().equals(splitItemValue[0]) && pumpkinTE.getDecayLevel() < 5)
+            String[] splitTagFromValue = itemValue.split(",");
+
+            ITag<Item> fuelTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(splitTagFromValue[0]));
+            int fuelValue = Integer.parseInt(splitTagFromValue[1]);
+
+            if (fuelTag.contains(mainHandItem) || fuelTag.contains(offHandItem) && torchTE.getDecayLevel() < 5)
             {
-                if (worldIn.getBlockState(pos).get(DECAY) + Integer.valueOf(splitItemValue[1]) > 5)
+                if (worldIn.getBlockState(pos).getValue(DECAY) + fuelValue > 5)
                 {
-                    worldIn.playSound(null, pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
-                    pumpkinTE.setDecayLevel(5);
+                    worldIn.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.3F, 0.8F);
+                    torchTE.setDecayLevel(5);
                     if (!player.isCreative())
                     {
-                        player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
+                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
                     }
                     return ActionResultType.SUCCESS;
                 }
                 else
                 {
-                    pumpkinTE.setDecayLevel(worldIn.getBlockState(pos).get(DECAY) + Integer.valueOf(splitItemValue[1]));
+                    torchTE.setDecayLevel(worldIn.getBlockState(pos).getValue(DECAY) + fuelValue);
                     if (!player.isCreative())
                     {
-                        player.getHeldItemMainhand().setCount(player.getHeldItemMainhand().getCount() - 1);
+                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
                     }
                     return ActionResultType.SUCCESS;
                 }
             }
         }
-
-        if (player.getHeldItemMainhand().getItem() == Items.SHEARS)
-        {
-            if (state.get(DECAY) > 1)
-            {
-                worldIn.playSound(null, pos, SoundEvents.ENTITY_SHEEP_SHEAR, SoundCategory.BLOCKS, 0.2F, 0.8F);
-                pumpkinTE.setDecayLevel(state.get(DECAY) - 1);
-                return ActionResultType.SUCCESS;
-            }
-            else
-                player.sendStatusMessage(new TranslationTextComponent("burningtorch.interact.shears.low"), true);
-        }
         return ActionResultType.FAIL;
-    }
-
-    @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
-    {
-
-        if (BurningTorchConfig.GENERAL.placeLitPumpkins.get())
-            return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite()).with(LIT, true);
-        else
-            return getDefaultState().with(FACING, context.getPlacementHorizontalFacing().getOpposite()).with(LIT, false);
     }
 
     @Override
     public FluidState getFluidState(BlockState state)
     {
-        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+        return state.getValue(WATERLOGGED) ? Fluids.WATER.getSource(false) : super.getFluidState(state);
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext context)
+    {
+        if (BurningTorchConfig.GENERAL.placeLitPumpkins.get())
+            return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(LIT, true);
+        else
+            return defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(LIT, false);
+    }
+
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
     {
         builder.add(LIT, DECAY, WATERLOGGED, FACING);
     }

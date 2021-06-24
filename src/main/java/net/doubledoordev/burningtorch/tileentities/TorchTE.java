@@ -12,14 +12,13 @@ import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 import net.doubledoordev.burningtorch.blocks.BlockHolder;
 import net.doubledoordev.burningtorch.blocks.BurningTorchBlock;
 import net.doubledoordev.burningtorch.util.UtilMethods;
-
-import static net.minecraft.world.GameRules.DO_FIRE_TICK;
 
 public class TorchTE extends TileEntity implements ITickableTileEntity
 {
@@ -39,32 +38,32 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
     }
 
     @Override
-    public void func_230337_a_(BlockState state, CompoundNBT compound)
+    public void load(BlockState state, CompoundNBT compound)
     {
-        super.func_230337_a_(state, compound);
+        super.load(state, compound);
         decayLevel = compound.getInt("decaylevel");
         decayTimer = compound.getInt("decayTimer");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound)
+    public CompoundNBT save(CompoundNBT compound)
     {
         compound.putInt("decaylevel", decayLevel);
         compound.putInt("decayTimer", decayTimer);
-        return super.write(compound);
+        return super.save(compound);
     }
 
     @Override
     @Nullable
     public SUpdateTileEntityPacket getUpdatePacket()
     {
-        return new SUpdateTileEntityPacket(this.pos, 3, this.getUpdateTag());
+        return new SUpdateTileEntityPacket(this.worldPosition, 3, this.getUpdateTag());
     }
 
     @Override
     public CompoundNBT getUpdateTag()
     {
-        return this.write(new CompoundNBT());
+        return this.save(new CompoundNBT());
     }
 
     public int getDecayLevel()
@@ -75,17 +74,17 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
     public void setDecayLevel(int decayLevel)
     {
         this.decayLevel = decayLevel;
-        this.world.setBlockState(pos, world.getBlockState(pos).with(BurningTorchBlock.DECAY, decayLevel));
+        this.level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(BurningTorchBlock.DECAY, decayLevel));
     }
 
     @Override
     public void tick()
     {
-        World world = this.world;
+        World world = this.level;
 
-        if (world.getBlockState(pos).getBlock() == BlockHolder.burningtorch.getBlock())
+        if (world.getBlockState(worldPosition).getBlock() == BlockHolder.burningtorch.getBlock())
         {
-            if (decayLevel > 0 && world.getBlockState(pos).get(BurningTorchBlock.LIT))
+            if (decayLevel > 0 && world.getBlockState(worldPosition).getValue(BurningTorchBlock.LIT))
             {
                 rainTimer++;
                 decayTimer++;
@@ -93,10 +92,10 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
                 // Timer is measuring in ticks! There are 20 ticks in a second!!!!
                 if (rainTimer > BurningTorchConfig.GENERAL.rainUpdateRate.get() && BurningTorchConfig.GENERAL.shouldRainExtinguish.get())
                 {
-                    if (world.isRaining() && world.canBlockSeeSky(pos))
+                    if (world.isRaining() && world.canSeeSky(worldPosition))
                     {
-                        world.setBlockState(pos, world.getBlockState(pos)
-                                .with(BurningTorchBlock.LIT, false));
+                        world.setBlockAndUpdate(worldPosition, world.getBlockState(worldPosition)
+                                .setValue(BurningTorchBlock.LIT, false));
                         updateBlock();
                         rainTimer = 0;
                     }
@@ -108,8 +107,8 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
                     if (decayLevel > 0)
                     {
                         this.decayLevel = decayLevel - 1;
-                        world.setBlockState(pos, world.getBlockState(pos)
-                                .with(BurningTorchBlock.DECAY, decayLevel));
+                        world.setBlockAndUpdate(worldPosition, world.getBlockState(worldPosition)
+                                .setValue(BurningTorchBlock.DECAY, decayLevel));
                         updateBlock();
                         decayTimer = 0;
                     }
@@ -117,26 +116,26 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
             }
             else if (decayLevel == 0)
             {
-                world.removeTileEntity(pos);
-                world.removeBlock(pos, false);
+                world.removeBlockEntity(worldPosition);
+                world.removeBlock(worldPosition, false);
                 decayTimer = 0;
             }
         }
         else
         {
-            world.removeTileEntity(pos);
+            world.removeBlockEntity(worldPosition);
         }
 
         //Fire handling from here.
 
         Random random = new Random();
-        BlockPos firePos = pos;
+        BlockPos firePos = worldPosition;
 
         // Check the game rules for fire ticks.
-        if (world.getGameRules().getBoolean(DO_FIRE_TICK) && world.getBlockState(pos).getBlock() == BlockHolder.burningtorch.getBlock())
+        if (world.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && world.getBlockState(worldPosition).getBlock() == BlockHolder.burningtorch.getBlock())
         {
             // Make sure the area is loaded.
-            if (!world.isAreaLoaded(firePos, 2) && world.getBlockState(pos).get(BurningTorchBlock.LIT) && BurningTorchConfig.GENERAL.torchesStartFireWhenLit.get())
+            if (!world.isAreaLoaded(firePos, 2) && world.getBlockState(worldPosition).getValue(BurningTorchBlock.LIT) && BurningTorchConfig.GENERAL.torchesStartFireWhenLit.get())
                 return;
 
             // Random int
@@ -148,19 +147,19 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
             if (randomInt < BurningTorchConfig.GENERAL.percentToStartFire.get() && tickCounter == BurningTorchConfig.GENERAL.delayBetweenFire.get())
             {
                 // find a random spot.
-                firePos = firePos.add(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
+                firePos = firePos.offset(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
 
-                BlockState fireState = AbstractFireBlock.func_235326_a_(world, pos);
+                BlockState fireState = AbstractFireBlock.getState(world, worldPosition);
 
                 if (firePos.getY() >= 0 && firePos.getY() < world.getHeight())
                 {
                     // Check the space around us for a burnable block.
                     if (UtilMethods.isSurroundingBlockFlammable(world, firePos))
                     {
-                        if (fireState.isValidPosition(world, firePos))
+                        if (fireState.canSurvive(world, firePos))
                         {
                             // set it on fire.
-                            world.setBlockState(firePos, fireState, 11);
+                            world.setBlock(firePos, fireState, 11);
                         }
                     }
                 }
@@ -172,14 +171,13 @@ public class TorchTE extends TileEntity implements ITickableTileEntity
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
     {
-        deserializeNBT(pkt.getNbtCompound());
+        deserializeNBT(pkt.getTag());
         updateBlock();
     }
 
     private void updateBlock()
     {
-        //this.world.markForRerender(pos);
-        markDirty();
+        setChanged();
     }
 
 }

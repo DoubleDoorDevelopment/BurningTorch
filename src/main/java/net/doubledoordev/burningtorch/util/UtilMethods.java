@@ -10,7 +10,7 @@ public class UtilMethods
     {
         for (Direction facing : Direction.values())
         {
-            if (getCanBlockBurn(worldIn, pos.offset(facing)))
+            if (getCanBlockBurn(worldIn, pos.offset(facing.getNormal())))
             {
                 return true;
             }
@@ -21,6 +21,6 @@ public class UtilMethods
 
     public static boolean getCanBlockBurn(World worldIn, BlockPos pos)
     {
-        return (pos.getY() < 0 || pos.getY() >= 256 || worldIn.isAreaLoaded(pos, 1)) && worldIn.getBlockState(pos).getMaterial().isFlammable() && !worldIn.hasWater(pos);
+        return (pos.getY() < 0 || pos.getY() >= 256 || worldIn.isAreaLoaded(pos, 1)) && worldIn.getBlockState(pos).getMaterial().isFlammable() && !worldIn.isWaterAt(pos);
     }
 }
