@@ -1,0 +1,6 @@
+{
+  "parent": "burningtorch:block/longtorch",
+  "textures": {
+    "torch": "burningtorch:block/torch"
+  }
+}

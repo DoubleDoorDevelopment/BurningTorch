@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "XXX",
+    "XXX",
+    "XXX"
+  ],
+  "key": {
+    "X":
+      {
+        "item": "burningtorch:charred_wood"
+      }
+  },
+  "result": {
+    "item": "burningtorch:torch",
+    "count": 1
+  }
+}

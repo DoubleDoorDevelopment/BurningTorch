@@ -26,5 +26,4 @@ version = "${file.jarVersion}" #mandatory
 displayName = "Burning Torch" #mandatory
 # The description text for the mod (multi line!) (#mandatory)
 description = '''
-Torches that burn over time and react to entites and weather!
-'''
+Torches that burn over time and react to entites and weather!'''

@@ -1,9 +1,9 @@
 {
-  "block.burningtorch.burningtorch": "Burning Torch",
+  "block.burningtorch.burning_torch": "Burning Torch",
   "block.burningtorch.burningtorchextinguished": "Burning Torch (Unlit)",
   "block.burningtorch.burningpumpkinextinguished": "Burning Pumpkin (Unlit)",
-  "block.burningtorch.burningpumpkin": "Burning Pumpkin",
-  "item.burningtorch.charredtorchremains": "Charred Torch Remains",
+  "block.burningtorch.burning_pumpkin": "Burning Pumpkin",
+  "item.burningtorch.charred_wood": "Charred Wood",
   "burningtorch.interact.shears.low": "You can't shear this further!",
   "burningtorch.config.title": "Burning Torch Config",
   "burningtorch.config.rainupdaterate": "Rain Update Rate",

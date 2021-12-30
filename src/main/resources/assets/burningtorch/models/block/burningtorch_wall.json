@@ -1,6 +1,0 @@
-{
-  "parent": "burningtorch:block/longtorch_wall",
-  "textures": {
-    "torch": "burningtorch:block/burningtorch"
-  }
-}
