@@ -18,11 +18,14 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 import net.doubledoordev.burningtorch.blocks.BlockRegistry;
-import net.doubledoordev.burningtorch.blocks.TorchBlock;
 import net.doubledoordev.burningtorch.util.Util;
 
 public class BurningLightBlockEntity extends BlockEntity
 {
+    int rainTimer;
+    int decayTimer;
+    int tickCounter;
+
     public static void tick(Level level, BlockPos pos, BlockState state, BurningLightBlockEntity burningLightBlockEntity)
     {
         if (level != null && !level.isClientSide())
@@ -38,19 +41,9 @@ public class BurningLightBlockEntity extends BlockEntity
             }
     }
 
-    int decayLevel;
-    int rainTimer;
-    int decayTimer;
-    int tickCounter;
-
     public BurningLightBlockEntity(BlockPos pos, BlockState state)
     {
         super(BlockRegistry.BURNING_LIGHT_BLOCK_ENTITY.get(), pos, state);
-
-        if (getBlockState().getBlock() == BlockRegistry.BURNING_TORCH.get())
-            decayLevel = BurningTorchConfig.GENERAL.torchStartingDecayLevel.get();
-        else
-            decayLevel = BurningTorchConfig.GENERAL.pumpkinStartingDecayLevel.get();
     }
 
     @ParametersAreNonnullByDefault
@@ -58,7 +51,6 @@ public class BurningLightBlockEntity extends BlockEntity
     public void load(CompoundTag compound)
     {
         super.load(compound);
-        decayLevel = compound.getInt("decaylevel");
         decayTimer = compound.getInt("decayTimer");
     }
 
@@ -67,7 +59,6 @@ public class BurningLightBlockEntity extends BlockEntity
     public void saveAdditional(CompoundTag compound)
     {
         super.saveAdditional(compound);
-        compound.putInt("decaylevel", decayLevel);
         compound.putInt("decayTimer", decayTimer);
     }
 
@@ -85,18 +76,6 @@ public class BurningLightBlockEntity extends BlockEntity
         return this.save(new CompoundTag());
     }
 
-    public int getDecayLevel()
-    {
-        return this.decayLevel;
-    }
-
-    public void setDecayLevel(int decayLevel)
-    {
-        this.decayLevel = decayLevel;
-        if (level != null)
-            this.level.setBlockAndUpdate(worldPosition, level.getBlockState(worldPosition).setValue(TorchBlock.DECAY, decayLevel));
-    }
-
     @Override
     public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
     {
@@ -106,6 +85,9 @@ public class BurningLightBlockEntity extends BlockEntity
 
     private void handleRain(Level level, BlockPos pos, BlockState state)
     {
+        if (level.isRainingAt(pos))
+            rainTimer++;
+
         // Timer is measuring in ticks! There are 20 ticks in a second!!!!
         if (rainTimer > BurningTorchConfig.GENERAL.rainUpdateRate.get() && BurningTorchConfig.GENERAL.shouldRainExtinguish.get())
         {
@@ -120,28 +102,24 @@ public class BurningLightBlockEntity extends BlockEntity
 
     private void decayBlock(Level level, BlockPos pos, BlockState state)
     {
-        if (decayLevel > 0)
+        if (state.getValue(Util.DECAY) > 0)
         {
-            rainTimer++;
             decayTimer++;
 
             // Timer is measuring in ticks! There are 20 ticks in a second!!!!
             if (decayTimer > BurningTorchConfig.GENERAL.decayRate.get())
             {
-                if (decayLevel > 0)
+                if (state.getValue(Util.DECAY) > 0)
                 {
-                    decayLevel = decayLevel - 1;
-                    level.setBlockAndUpdate(pos, state
-                            .setValue(BlockStateProperties.LIT, false));
+                    level.setBlockAndUpdate(pos, state.setValue(Util.DECAY, state.getValue(Util.DECAY) - 1));
                     decayTimer = 0;
                 }
             }
         }
-        else if (decayLevel == 0)
+        else if (state.getValue(Util.DECAY) == 0)
         {
             level.removeBlockEntity(pos);
             level.removeBlock(pos, false);
-            decayTimer = 0;
         }
         else
         {

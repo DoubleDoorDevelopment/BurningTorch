@@ -8,18 +8,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
@@ -27,6 +23,7 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -39,10 +36,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
-import net.doubledoordev.burningtorch.BurningTorch;
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 import net.doubledoordev.burningtorch.blocks.blockentities.BurningLightBlockEntity;
 import net.doubledoordev.burningtorch.util.Util;
@@ -129,68 +123,14 @@ public class TorchBlock extends BaseEntityBlock
     @ParametersAreNonnullByDefault
     @Nonnull
     @Override
-    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult hit)
     {
-        BurningLightBlockEntity burningLightBlockEntity = (BurningLightBlockEntity) worldIn.getBlockEntity(pos);
-
-        Tag<Item> extinguishTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "extinguish_items"));
-        Tag<Item> relightTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "relight_items"));
-        Tag<Item> cuttingTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "cutting_items"));
-
-        Item mainHandItem = player.getMainHandItem().getItem();
-        Item offHandItem = player.getOffhandItem().getItem();
-
-        if (extinguishTag.contains(mainHandItem) || extinguishTag.contains(offHandItem))
-        {
-            worldIn.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 0.3F, 0.8F);
-            worldIn.setBlockAndUpdate(pos, worldIn.getBlockState(pos).setValue(LIT, false));
+        if (Util.extinguishBurningSource(player, level, pos, interactionHand) ||
+                Util.igniteBurningSource(player, level, pos, interactionHand) ||
+                Util.trimBurningSource(player, level, pos, state, interactionHand) ||
+                Util.refuelBurningSource(player, level, pos, state, interactionHand))
             return InteractionResult.SUCCESS;
-        }
 
-        if (relightTag.contains(mainHandItem) || relightTag.contains(offHandItem))
-        {
-            worldIn.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 0.3F, 0.8F);
-            worldIn.setBlockAndUpdate(pos, worldIn.getBlockState(pos).setValue(LIT, true));
-            return InteractionResult.SUCCESS;
-        }
-
-        if ((cuttingTag.contains(mainHandItem) || cuttingTag.contains(offHandItem)) && burningLightBlockEntity != null)
-        {
-            if (state.getValue(DECAY) > 1)
-            {
-                worldIn.playSound(null, pos, SoundEvents.SHEEP_SHEAR, SoundSource.BLOCKS, 0.2F, 0.8F);
-                burningLightBlockEntity.setDecayLevel(state.getValue(DECAY) - 1);
-                return InteractionResult.SUCCESS;
-            }
-            else
-                player.displayClientMessage(new TranslatableComponent("burningtorch.interact.shears.low"), true);
-        }
-
-        for (String itemValue : BurningTorchConfig.GENERAL.extendingItems.get())
-        {
-            String[] splitTagFromValue = itemValue.split(",");
-
-            Tag<Item> fuelTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(splitTagFromValue[0]));
-            int fuelValue = Integer.parseInt(splitTagFromValue[1]);
-            if (burningLightBlockEntity != null)
-                if (fuelTag.contains(mainHandItem) || fuelTag.contains(offHandItem) && burningLightBlockEntity.getDecayLevel() < 5)
-                {
-                    if (worldIn.getBlockState(pos).getValue(DECAY) + fuelValue > 5)
-                    {
-                        worldIn.playSound(null, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, SoundSource.BLOCKS, 0.3F, 0.8F);
-                        burningLightBlockEntity.setDecayLevel(5);
-                    }
-                    else
-                    {
-                        burningLightBlockEntity.setDecayLevel(worldIn.getBlockState(pos).getValue(DECAY) + fuelValue);
-                    }
-                    if (!player.isCreative())
-                    {
-                        player.getMainHandItem().setCount(player.getMainHandItem().getCount() - 1);
-                    }
-                    return InteractionResult.SUCCESS;
-                }
-        }
         return InteractionResult.FAIL;
     }
 
@@ -209,7 +149,7 @@ public class TorchBlock extends BaseEntityBlock
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext collisionContext)
     {
         return switch (state.getValue(FACING))
                 {
@@ -224,20 +164,20 @@ public class TorchBlock extends BaseEntityBlock
     // NOTE: Must be entity collide as projectile collide only works on SOLID blocks. (Lights unlit torches)
     @Override
     @ParametersAreNonnullByDefault
-    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entityIn)
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity)
     {
-        // Stole from campfires and modified.
-        if (!worldIn.isClientSide())
+        // Stole from campfires and modified. This harms the entity on the torch.
+        if (BurningTorchConfig.GENERAL.torchesBurnEntities.get() && !entity.fireImmune() && state.getValue(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity))
         {
-            if (entityIn.isOnFire() && !state.getValue(LIT))
-            {
-                worldIn.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
-            }
+            entity.hurt(DamageSource.IN_FIRE, 1);
         }
+
+        // Torches don't stop entities, thus if they collide and are on fire, light torch.
+        if (!state.getValue(LIT) && entity.getRemainingFireTicks() > 0)
+            level.setBlockAndUpdate(pos, state.setValue(LIT, true));
     }
 
     // Handles the effects on the top of the torch.
-    @OnlyIn(Dist.CLIENT)
     @ParametersAreNonnullByDefault
     public void animateTick(BlockState state, Level level, BlockPos pos, Random rand)
     {
@@ -248,7 +188,7 @@ public class TorchBlock extends BaseEntityBlock
 
         boolean lit = state.getValue(LIT);
         Direction facing = state.getValue(FACING);
-        int decay = burningLightBlockEntity.getDecayLevel();
+        int decay = state.getValue(Util.DECAY);
         double random = Math.random();
 
         double d0 = (double) pos.getX() + 0.5D;
@@ -377,6 +317,14 @@ public class TorchBlock extends BaseEntityBlock
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         builder.add(LIT, DECAY, FACING);
+    }
+
+    @ParametersAreNonnullByDefault
+    @Nonnull
+    @Override
+    public RenderShape getRenderShape(BlockState state)
+    {
+        return RenderShape.MODEL;
     }
 
     @ParametersAreNonnullByDefault
