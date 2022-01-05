@@ -38,7 +38,6 @@ public class BurningTorchConfig
         public IntValue delayBetweenFire;
         public ConfigValue<List<? extends String>> extendingItems;
         public BooleanValue shouldRainExtinguish;
-        public BooleanValue replaceVanillaDrops;
         // Torch stuff
         public BooleanValue torchesBurnEntities;
         public BooleanValue torchesStartFireWhenLit;
@@ -82,11 +81,6 @@ public class BurningTorchConfig
                     .comment("Item Tag lists that are valid fuel sources for torches to consume. Number is the value for every item in the list.")
                     .translation("burningtorch.config.itemstoextend")
                     .defineList("extendingItems", BurningTorchConfig.General.extendingItemsList(), p -> p instanceof String);
-
-            replaceVanillaDrops = builder
-                    .comment("Should vanilla Torches and Jack-o-Lanterns have their drops replaced with charred wood?")
-                    .translation("burningtorch.config.replaceVanillaDrops")
-                    .define("replaceVanillaDrops", true);
 
             builder.pop();
 
