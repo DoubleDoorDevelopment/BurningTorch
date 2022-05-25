@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
-import net.doubledoordev.burningtorch.BurningTorch;
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 
 public class Util
@@ -40,16 +39,16 @@ public class Util
         return (pos.getY() < 0 || pos.getY() >= 256 || level.isAreaLoaded(pos, 1)) && level.getBlockState(pos).getMaterial().isFlammable() && !level.isWaterAt(pos);
     }
 
-    public static boolean holdingValidItem(Tag<Item> itemTag, Player player, InteractionHand interactionHand)
+    public static boolean holdingValidItem(TagKey<Item> itemTag, Player player, InteractionHand interactionHand)
     {
         if (interactionHand == InteractionHand.MAIN_HAND)
-            return itemTag.contains(player.getMainHandItem().getItem());
-        else return itemTag.contains(player.getOffhandItem().getItem());
+            return player.getMainHandItem().is(itemTag);
+        else return player.getOffhandItem().is(itemTag);
     }
 
     public static boolean extinguishBurningSource(Player player, Level level, BlockPos pos, InteractionHand interactionHand)
     {
-        if (holdingValidItem(ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "extinguish_items")), player, interactionHand))
+        if (holdingValidItem(TagKeys.EXTINGUISH_ITEMS, player, interactionHand))
         {
             level.playSound(null, pos, SoundEvents.GENERIC_EXTINGUISH_FIRE, SoundSource.BLOCKS, 0.3F, 0.8F);
             level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(BlockStateProperties.LIT, false));
@@ -60,7 +59,7 @@ public class Util
 
     public static boolean igniteBurningSource(Player player, Level level, BlockPos pos, InteractionHand interactionHand)
     {
-        if (holdingValidItem(ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "relight_items")), player, interactionHand))
+        if (holdingValidItem(TagKeys.RELIGHT_ITEMS, player, interactionHand))
         {
             level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 0.3F, 0.8F);
             level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(BlockStateProperties.LIT, true));
@@ -71,7 +70,7 @@ public class Util
 
     public static boolean trimBurningSource(Player player, Level level, BlockPos pos, BlockState state, InteractionHand interactionHand)
     {
-        if (holdingValidItem(ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(BurningTorch.MODID, "cutting_items")), player, interactionHand))
+        if (holdingValidItem(TagKeys.CUTTING_ITEMS, player, interactionHand))
         {
             // Need to do this on it's own so we can feed a reply if the object is too low.
             if (state.getValue(DECAY) > 1)
@@ -91,7 +90,7 @@ public class Util
         {
             String[] splitTagFromValue = itemValue.split(",");
 
-            Tag<Item> fuelTag = ItemTags.getAllTags().getTagOrEmpty(new ResourceLocation(splitTagFromValue[0]));
+            TagKey<Item> fuelTag = ItemTags.create(new ResourceLocation(splitTagFromValue[0]));
             int fuelValue = Integer.parseInt(splitTagFromValue[1]);
 
             if (holdingValidItem(fuelTag, player, interactionHand) && state.getValue(DECAY) < 5)

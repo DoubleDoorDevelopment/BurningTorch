@@ -18,7 +18,7 @@ import net.doubledoordev.burningtorch.items.ItemRegistry;
 @Mod("burningtorch")
 public class BurningTorch
 {
-    public static final String MODID = "burningtorch";
+    public static final String MOD_ID = "burningtorch";
 
     public static Logger LOGGER = LogManager.getLogger();
 

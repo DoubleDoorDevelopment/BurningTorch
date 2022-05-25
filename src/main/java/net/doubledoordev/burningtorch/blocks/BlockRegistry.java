@@ -26,8 +26,8 @@ import net.doubledoordev.burningtorch.items.ItemRegistry;
 
 public class BlockRegistry
 {
-    public static final DeferredRegister<Block> BLOCK_DEFERRED = DeferredRegister.create(ForgeRegistries.BLOCKS, BurningTorch.MODID);
-    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITY_DEFERRED = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, BurningTorch.MODID);
+    public static final DeferredRegister<Block> BLOCK_DEFERRED = DeferredRegister.create(ForgeRegistries.BLOCKS, BurningTorch.MOD_ID);
+    public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITY_DEFERRED = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITIES, BurningTorch.MOD_ID);
 
     // Blocks
     public static final RegistryObject<Block> BURNING_TORCH = register("torch",

@@ -13,7 +13,7 @@ import net.doubledoordev.burningtorch.BurningTorch;
 
 public class ItemRegistry
 {
-    public static final DeferredRegister<Item> ITEMS_DEFERRED = DeferredRegister.create(ForgeRegistries.ITEMS, BurningTorch.MODID);
+    public static final DeferredRegister<Item> ITEMS_DEFERRED = DeferredRegister.create(ForgeRegistries.ITEMS, BurningTorch.MOD_ID);
 
     //Items
     public static final RegistryObject<Item> CHARRED_WOOD = register("charred_wood", () -> new Item(new Item.Properties()
