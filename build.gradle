@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle'
 
-version = '3.0.2'
+version = '4.0.0DEV'
 group = 'net.doubledoordev.burningtorch' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'burningtorch'
 

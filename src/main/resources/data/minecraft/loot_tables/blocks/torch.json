@@ -7,7 +7,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "burningtorch:charredtorchremains"
+          "name": "burningtorch:charred_wood"
         }
       ],
       "conditions": [
