@@ -22,6 +22,8 @@ import net.minecraftforge.registries.RegistryObject;
 
 import net.doubledoordev.burningtorch.BurningTorch;
 import net.doubledoordev.burningtorch.blocks.blockentities.BurningLightBlockEntity;
+import net.doubledoordev.burningtorch.blocks.blockentities.BurningPumpkinBlockEntity;
+import net.doubledoordev.burningtorch.blocks.blockentities.BurningTorchBlockEntity;
 import net.doubledoordev.burningtorch.items.ItemRegistry;
 
 public class BlockRegistry
@@ -51,16 +53,27 @@ public class BlockRegistry
             new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)
     );
 
-
-    // Block Entities
-    public static final RegistryObject<BlockEntityType<BurningLightBlockEntity>> BURNING_LIGHT_BLOCK_ENTITY = register("burning_light_block_entity", BurningLightBlockEntity::new, BURNING_TORCH);
-
+    public static final RegistryObject<Block> SOOT_MARK = register("soot",
+            () -> new SootMarkBlock(
+                    BlockBehaviour.Properties.of(Material.DECORATION, MaterialColor.COLOR_BLACK)
+                            .noCollission()
+                            .instabreak()
+                            .sound(SoundType.WOOD)
+                            .isSuffocating(BlockRegistry::never)
+            ),
+            new Item.Properties().tab(CreativeModeTab.TAB_DECORATIONS)
+    );
 
     //Internals for registry
+    @SuppressWarnings("ConstantConditions")
     private static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String name, BlockEntityType.BlockEntitySupplier<T> factory, Supplier<? extends Block> block)
     {
         return TILE_ENTITY_DEFERRED.register(name, () -> BlockEntityType.Builder.of(factory, block.get()).build(null));
-    }
+    }    // Block Entities
+
+    public static final RegistryObject<BlockEntityType<BurningLightBlockEntity>> BURNING_TORCH_LIGHT_BLOCK_ENTITY = register("burning_torch_block_entity", BurningTorchBlockEntity::new, BURNING_TORCH);
+    public static final RegistryObject<BlockEntityType<BurningLightBlockEntity>> BURNING_PUMPKIN_LIGHT_BLOCK_ENTITY = register("burning_pumpkin_block_entity", BurningPumpkinBlockEntity::new, BURNING_PUMPKIN);
+
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<T> blockSupplier, Item.Properties properties)
     {

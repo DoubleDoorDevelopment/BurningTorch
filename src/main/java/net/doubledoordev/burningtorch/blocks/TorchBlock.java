@@ -39,16 +39,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import net.doubledoordev.burningtorch.BurningTorchConfig;
 import net.doubledoordev.burningtorch.blocks.blockentities.BurningLightBlockEntity;
+import net.doubledoordev.burningtorch.blocks.blockentities.BurningTorchBlockEntity;
 import net.doubledoordev.burningtorch.util.Util;
 
-public class TorchBlock extends BaseEntityBlock
+public class TorchBlock extends BaseEntityBlock implements SimpleBurningBlock
 {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
     public static final IntegerProperty DECAY = Util.DECAY;
 
     private static final VoxelShape STANDING = Block.box(6, 0, 6, 10, 13, 10);
-
     private static final VoxelShape TORCH_NORTH = Block.box(6, 3, 10, 10, 16, 16);
     private static final VoxelShape TORCH_EAST = Block.box(0, 3, 6, 6, 16, 10);
     private static final VoxelShape TORCH_SOUTH = Block.box(6, 3, 0, 10, 16, 6);
@@ -73,15 +73,15 @@ public class TorchBlock extends BaseEntityBlock
             switch (state.getValue(DECAY))
             {
                 case 5:
-                    return BurningTorchConfig.GENERAL.torchlightLevel5.get();
+                    return BurningTorchConfig.GENERAL.torchLightDecay5.get();
                 case 4:
-                    return BurningTorchConfig.GENERAL.torchlightLevel4.get();
+                    return BurningTorchConfig.GENERAL.torchLightDecay4.get();
                 case 3:
-                    return BurningTorchConfig.GENERAL.torchlightLevel3.get();
+                    return BurningTorchConfig.GENERAL.torchLightDecay3.get();
                 case 2:
-                    return BurningTorchConfig.GENERAL.torchlightLevel2.get();
+                    return BurningTorchConfig.GENERAL.torchLightDecay2.get();
                 case 1:
-                    return BurningTorchConfig.GENERAL.torchlightLevel1.get();
+                    return BurningTorchConfig.GENERAL.torchLightDecay1.get();
             }
         }
         return 0;
@@ -90,7 +90,7 @@ public class TorchBlock extends BaseEntityBlock
     @Override
     public boolean isBurning(BlockState state, BlockGetter world, BlockPos pos)
     {
-        if (BurningTorchConfig.GENERAL.torchesBurnEntities.get())
+        if (BurningTorchConfig.GENERAL.torchBurnsEntities.get())
         {
             return world.getBlockState(pos).getValue(LIT);
         }
@@ -103,6 +103,7 @@ public class TorchBlock extends BaseEntityBlock
      * returns its solidified counterpart.
      * Note that this method should ideally consider only the specific face passed in.
      **/
+    @SuppressWarnings("deprecation")
     @Nonnull
     @ParametersAreNonnullByDefault
     @Override
@@ -120,6 +121,7 @@ public class TorchBlock extends BaseEntityBlock
         }
     }
 
+    @SuppressWarnings("deprecation")
     @ParametersAreNonnullByDefault
     @Nonnull
     @Override
@@ -128,13 +130,14 @@ public class TorchBlock extends BaseEntityBlock
         if (Util.extinguishBurningSource(player, level, pos, interactionHand) ||
                 Util.igniteBurningSource(player, level, pos, interactionHand) ||
                 Util.trimBurningSource(player, level, pos, state, interactionHand) ||
-                Util.refuelBurningSource(player, level, pos, state, interactionHand))
+                Util.refuelBurningSource(BurningTorchConfig.GENERAL.torchExtendingTags, player, level, pos, state, interactionHand))
             return InteractionResult.SUCCESS;
 
         return InteractionResult.FAIL;
     }
 
     // Stole from wall torches.
+    @SuppressWarnings("deprecation")
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos)
     {
@@ -146,6 +149,7 @@ public class TorchBlock extends BaseEntityBlock
     }
 
     // Switch statement that handles the bounding boxes for each direction.
+    @SuppressWarnings("deprecation")
     @Override
     @ParametersAreNonnullByDefault
     @Nonnull
@@ -162,12 +166,14 @@ public class TorchBlock extends BaseEntityBlock
     }
 
     // NOTE: Must be entity collide as projectile collide only works on SOLID blocks. (Lights unlit torches)
+    @SuppressWarnings("deprecation")
     @Override
     @ParametersAreNonnullByDefault
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity)
     {
         // Stole from campfires and modified. This harms the entity on the torch.
-        if (BurningTorchConfig.GENERAL.torchesBurnEntities.get() && !entity.fireImmune() && state.getValue(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity))
+        if (BurningTorchConfig.GENERAL.torchBurnsEntities.get() && !entity.fireImmune() && state.getValue(LIT) &&
+                entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity))
         {
             entity.hurt(DamageSource.IN_FIRE, 1);
         }
@@ -179,7 +185,7 @@ public class TorchBlock extends BaseEntityBlock
 
     // Handles the effects on the top of the torch.
     @ParametersAreNonnullByDefault
-    public void animateTick(BlockState state, Level level, BlockPos pos, Random rand)
+    public void animateTick(BlockState state, Level level, BlockPos pos, Random random)
     {
         BurningLightBlockEntity burningLightBlockEntity = (BurningLightBlockEntity) level.getBlockEntity(pos);
 
@@ -189,21 +195,20 @@ public class TorchBlock extends BaseEntityBlock
         boolean lit = state.getValue(LIT);
         Direction facing = state.getValue(FACING);
         int decay = state.getValue(Util.DECAY);
-        double random = Math.random();
 
-        double d0 = (double) pos.getX() + 0.5D;
-        double d1 = (double) pos.getY() + 0.9D;
-        double d2 = (double) pos.getZ() + 0.5D;
+        double x = (double) pos.getX() + 0.5D;
+        double y = (double) pos.getY() + 0.9D;
+        double z = (double) pos.getZ() + 0.5D;
 
         // Fix d1 for height changes.
         switch (decay)
         {
-            case 5 -> d1 = (double) pos.getY() + 0.9D;
-            case 4 -> d1 = (double) pos.getY() + 0.85D;
-            case 3 -> d1 = (double) pos.getY() + 0.75D;
-            case 2 -> d1 = (double) pos.getY() + 0.62D;
-            case 1 -> d1 = (double) pos.getY() + 0.44D;
-            case 0 -> d1 = (double) pos.getY() + 0.35D;
+            case 5 -> y = (double) pos.getY() + 0.9D;
+            case 4 -> y = (double) pos.getY() + 0.85D;
+            case 3 -> y = (double) pos.getY() + 0.75D;
+            case 2 -> y = (double) pos.getY() + 0.62D;
+            case 1 -> y = (double) pos.getY() + 0.44D;
+            case 0 -> y = (double) pos.getY() + 0.35D;
         }
 
         if (lit)
@@ -215,33 +220,33 @@ public class TorchBlock extends BaseEntityBlock
                 switch (decay)
                 {
                     case 5:
-                        level.addParticle(ParticleTypes.SMOKE, d0 + 0.2D * (double) facing.getOpposite().getStepX(), d1 + 0.20D, d2 + 0.2D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0 + 0.2D * (double) facing.getOpposite().getStepX(), d1 + 0.20D, d2 + 0.2D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x + 0.2D * (double) facing.getOpposite().getStepX(), y + 0.20D, z + 0.2D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x + 0.2D * (double) facing.getOpposite().getStepX(), y + 0.20D, z + 0.2D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 4:
-                        level.addParticle(ParticleTypes.SMOKE, d0 + 0.22D * (double) facing.getOpposite().getStepX(), d1 + 0.16D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0 + 0.22D * (double) facing.getOpposite().getStepX(), d1 + 0.16D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x + 0.22D * (double) facing.getOpposite().getStepX(), y + 0.16D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x + 0.22D * (double) facing.getOpposite().getStepX(), y + 0.16D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 3:
-                        level.addParticle(ParticleTypes.SMOKE, d0 + 0.24D * (double) facing.getOpposite().getStepX(), d1 + 0.15D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0 + 0.24D * (double) facing.getOpposite().getStepX(), d1 + 0.15D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x + 0.24D * (double) facing.getOpposite().getStepX(), y + 0.15D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x + 0.24D * (double) facing.getOpposite().getStepX(), y + 0.15D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 2:
-                        level.addParticle(ParticleTypes.SMOKE, d0 + 0.3D * (double) facing.getOpposite().getStepX(), d1 + 0.16D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0 + 0.3D * (double) facing.getOpposite().getStepX(), d1 + 0.16D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x + 0.3D * (double) facing.getOpposite().getStepX(), y + 0.16D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x + 0.3D * (double) facing.getOpposite().getStepX(), y + 0.16D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 1:
-                        if (random > 0.5)
+                        if (random.nextFloat() > 0.5)
                         {
-                            level.addParticle(ParticleTypes.SMOKE, d0 + 0.35D * (double) facing.getOpposite().getStepX(), d1 + 0.28D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                            level.addParticle(ParticleTypes.FLAME, d0 + 0.35D * (double) facing.getOpposite().getStepX(), d1 + 0.28D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                            level.addParticle(ParticleTypes.SMOKE, x + 0.35D * (double) facing.getOpposite().getStepX(), y + 0.28D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                            level.addParticle(ParticleTypes.FLAME, x + 0.35D * (double) facing.getOpposite().getStepX(), y + 0.28D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         }
-                        else
-                            level.addParticle(ParticleTypes.LARGE_SMOKE, d0 + 0.35D * (double) facing.getOpposite().getStepX(), d1 + 0.28D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        else if (BurningTorchConfig.GENERAL.torchBurnoutWarning.get())
+                            level.addParticle(ParticleTypes.LARGE_SMOKE, x + 0.35D * (double) facing.getOpposite().getStepX(), y + 0.28D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                     case 0:
-                        level.addParticle(ParticleTypes.SMOKE, d0 + 0.1D * (double) facing.getOpposite().getStepX(), d1 + 0.09D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0 + 0.1D * (double) facing.getOpposite().getStepX(), d1 + 0.09D, d2 + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x + 0.1D * (double) facing.getOpposite().getStepX(), y + 0.09D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x + 0.1D * (double) facing.getOpposite().getStepX(), y + 0.09D, z + 0.3D * (double) facing.getOpposite().getStepZ(), 0.0D, 0.0D, 0.0D);
                         break;
                 }
 
@@ -257,17 +262,17 @@ public class TorchBlock extends BaseEntityBlock
                     case 3:
                     case 2:
                     case 0:
-                        level.addParticle(ParticleTypes.SMOKE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                        level.addParticle(ParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
+                        level.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
                         break;
                     case 1:
-                        if (random > 0.5)
+                        if (random.nextFloat() > 0.5)
                         {
-                            level.addParticle(ParticleTypes.SMOKE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
-                            level.addParticle(ParticleTypes.FLAME, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                            level.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
+                            level.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
                         }
-                        else
-                            level.addParticle(ParticleTypes.LARGE_SMOKE, d0, d1, d2, 0.0D, 0.0D, 0.0D);
+                        else if (BurningTorchConfig.GENERAL.torchBurnoutWarning.get())
+                            level.addParticle(ParticleTypes.LARGE_SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
                         break;
                 }
             }
@@ -279,7 +284,7 @@ public class TorchBlock extends BaseEntityBlock
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         // Set the blockstate to default.
-        BlockState blockstate = this.defaultBlockState();
+        BlockState blockstate = this.defaultBlockState().setValue(DECAY, BurningTorchConfig.GENERAL.torchStartingDecayLevel.get());
         // Gets world data?
         Level level = context.getLevel();
         // Get the pos we are working with.
@@ -300,13 +305,13 @@ public class TorchBlock extends BaseEntityBlock
                 // If we have a valid spot to place the block, we place it.
                 if (blockstate.canSurvive(level, blockpos))
                 {
-                    if (BurningTorchConfig.GENERAL.placeLitTorches.get())
+                    if (BurningTorchConfig.GENERAL.torchPlaceLit.get())
                         return blockstate.setValue(LIT, true);
                     else return blockstate;
                 }
             }
             // If the direction we get back isn't horizontal we place the torch like normal with the default state.
-            else if (BurningTorchConfig.GENERAL.placeLitTorches.get())
+            else if (BurningTorchConfig.GENERAL.torchPlaceLit.get())
                 return blockstate.setValue(LIT, true);
             else return blockstate;
         }
@@ -331,7 +336,7 @@ public class TorchBlock extends BaseEntityBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new BurningLightBlockEntity(pos, state);
+        return new BurningTorchBlockEntity(pos, state);
     }
 
     @ParametersAreNonnullByDefault
@@ -339,6 +344,22 @@ public class TorchBlock extends BaseEntityBlock
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType)
     {
-        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockRegistry.BURNING_LIGHT_BLOCK_ENTITY.get(), BurningLightBlockEntity::tick);
+        return level.isClientSide ? null : createTickerHelper(blockEntityType, BlockRegistry.BURNING_TORCH_LIGHT_BLOCK_ENTITY.get(), BurningLightBlockEntity::tick);
+    }
+
+    @Override
+    public void doLifeCycleTick(Level level, BlockPos pos, BlockState state, BurningLightBlockEntity burningLightBlockEntity)
+    {
+        burningLightBlockEntity.handleRain(BurningTorchConfig.GENERAL.torchRainExtinguish, BurningTorchConfig.GENERAL.torchRainUpdateRate, level, pos, state);
+        burningLightBlockEntity.startFires(BurningTorchConfig.GENERAL.torchPercentToStartFire, BurningTorchConfig.GENERAL.torchDelayBetweenFire, level, pos, state);
+        burningLightBlockEntity.decayBlock(BurningTorchConfig.GENERAL.torchDecayRate, level, pos, state);
+    }
+
+    @Override
+    public BlockState getExpiredBlockStateReplacement()
+    {
+        if (BurningTorchConfig.GENERAL.torchMakesSootMark.get())
+            return SimpleBurningBlock.super.getExpiredBlockStateReplacement();
+        else return Blocks.AIR.defaultBlockState();
     }
 }

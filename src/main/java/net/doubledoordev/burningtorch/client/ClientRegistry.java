@@ -20,5 +20,6 @@ public class ClientRegistry
     {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.BURNING_TORCH.get(), RenderType.cutoutMipped());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.BURNING_PUMPKIN.get(), RenderType.solid());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SOOT_MARK.get(), RenderType.translucent());
     }
 }

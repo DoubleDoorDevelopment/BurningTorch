@@ -1,0 +1,44 @@
+{
+  "credit": "Made By Claycorp for DoubleDoorDevelopment.",
+  "parent": "block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "0": "burningtorch:block/soot",
+    "particle": "burningtorch:block/soot"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        0.1,
+        16
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#0"
+        }
+      }
+    }
+  ]
+}
+

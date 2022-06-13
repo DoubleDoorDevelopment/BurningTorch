@@ -13,6 +13,8 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
 
 import net.doubledoordev.burningtorch.blocks.BlockRegistry;
 import net.doubledoordev.burningtorch.client.ClientRegistry;
+import net.doubledoordev.burningtorch.events.LlamasSpitAtFire;
+import net.doubledoordev.burningtorch.events.PlaceLightInPumpkin;
 import net.doubledoordev.burningtorch.items.ItemRegistry;
 
 @Mod("burningtorch")
@@ -35,6 +37,10 @@ public class BurningTorch
         }
 
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(PlaceLightInPumpkin.class);
+
+        if (BurningTorchConfig.GENERAL.llamaSpitAtBlocks.get())
+            MinecraftForge.EVENT_BUS.register(LlamasSpitAtFire.class);
 
         ItemRegistry.ITEMS_DEFERRED.register(modEventBus);
         BlockRegistry.BLOCK_DEFERRED.register(modEventBus);

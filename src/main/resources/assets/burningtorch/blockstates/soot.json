@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "burningtorch:block/soot"
+    },
+    "facing=down": {
+      "model": "burningtorch:block/soot"
+    },
+    "facing=east": {
+      "model": "burningtorch:block/soot_wall",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "burningtorch:block/soot_wall",
+      "y": 270
+    },
+    "facing=north": {
+      "model": "burningtorch:block/soot_wall"
+    },
+    "facing=south": {
+      "model": "burningtorch:block/soot_wall",
+      "y": 180
+    }
+  }
+}

@@ -1,5 +1,7 @@
 package net.doubledoordev.burningtorch.util;
 
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -12,31 +14,42 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-
-import net.doubledoordev.burningtorch.BurningTorchConfig;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Util
 {
     public static final IntegerProperty DECAY = IntegerProperty.create("decay", 0, 5);
+    public static final VoxelShape BUMP_INTO_BLOCK = Block.box(1.0D, 0.0D, 1.0D, 15.0D, 15.0D, 15.0D);
+
+    public static Vec3 blockPosToVec3(BlockPos pos)
+    {
+        return new Vec3(pos.getX(), pos.getY(), pos.getZ());
+    }
 
     public static boolean isSurroundingBlockFlammable(Level level, BlockPos pos)
     {
-        for (Direction facing : Direction.values())
-        {
-            if (getCanBlockBurn(level, pos.offset(facing.getNormal())))
+        // Guard against replacing blocks that aren't burnable being removed due to them having something burnable around them.
+        if (getCanBlockBurn(level, pos))
+            for (Direction facing : Direction.values())
             {
-                return true;
+                if (getCanBlockBurn(level, pos.offset(facing.getNormal())))
+                {
+                    return true;
+                }
             }
-        }
         return false;
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean getCanBlockBurn(Level level, BlockPos pos)
     {
-        return (pos.getY() < 0 || pos.getY() >= 256 || level.isAreaLoaded(pos, 1)) && level.getBlockState(pos).getMaterial().isFlammable() && !level.isWaterAt(pos);
+        return (level.isInWorldBounds(pos) || level.isAreaLoaded(pos, 1)) && level.getBlockState(pos).getMaterial().isFlammable() && !level.isWaterAt(pos);
     }
 
     public static boolean holdingValidItem(TagKey<Item> itemTag, Player player, InteractionHand interactionHand)
@@ -59,10 +72,25 @@ public class Util
 
     public static boolean igniteBurningSource(Player player, Level level, BlockPos pos, InteractionHand interactionHand)
     {
+        BlockState state = level.getBlockState(pos);
+
+        // Check if the player is holding an item to light the object.
         if (holdingValidItem(TagKeys.RELIGHT_ITEMS, player, interactionHand))
         {
+            // Handle water logged blocks separate as you can light them after they are waterlogged otherwise.
+            if (state.hasProperty(BlockStateProperties.WATERLOGGED))
+            {
+                if (!state.getValue(BlockStateProperties.WATERLOGGED))
+                {
+                    level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 0.3F, 0.8F);
+                    level.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
+                }
+                else return false;
+            }
+
+            // Handle everything else.
             level.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 0.3F, 0.8F);
-            level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(BlockStateProperties.LIT, true));
+            level.setBlockAndUpdate(pos, state.setValue(BlockStateProperties.LIT, true));
             return true;
         }
         return false;
@@ -84,9 +112,9 @@ public class Util
         return false;
     }
 
-    public static boolean refuelBurningSource(Player player, Level level, BlockPos pos, BlockState state, InteractionHand interactionHand)
+    public static boolean refuelBurningSource(ForgeConfigSpec.ConfigValue<List<? extends String>> fuelTags, Player player, Level level, BlockPos pos, BlockState state, InteractionHand interactionHand)
     {
-        for (String itemValue : BurningTorchConfig.GENERAL.extendingItems.get())
+        for (String itemValue : fuelTags.get())
         {
             String[] splitTagFromValue = itemValue.split(",");
 

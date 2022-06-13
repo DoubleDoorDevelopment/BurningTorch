@@ -12,12 +12,15 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.registries.RegistryObject;
 
-import net.doubledoordev.burningtorch.BurningTorchConfig;
-import net.doubledoordev.burningtorch.blocks.BlockRegistry;
+import net.doubledoordev.burningtorch.blocks.SimpleBurningBlock;
 import net.doubledoordev.burningtorch.util.Util;
 
 public class BurningLightBlockEntity extends BlockEntity
@@ -29,21 +32,20 @@ public class BurningLightBlockEntity extends BlockEntity
     public static void tick(Level level, BlockPos pos, BlockState state, BurningLightBlockEntity burningLightBlockEntity)
     {
         if (level != null && !level.isClientSide())
+        {
 
-            if (state.getValue(BlockStateProperties.LIT))
+            Block block = state.getBlock();
+
+            if (state.getValue(BlockStateProperties.LIT) && block instanceof SimpleBurningBlock)
             {
-                if (state.getBlock() != BlockRegistry.BURNING_PUMPKIN.get())
-                {
-                    burningLightBlockEntity.handleRain(level, pos, state);
-                    burningLightBlockEntity.startFires(level, pos, state);
-                }
-                burningLightBlockEntity.decayBlock(level, pos, state);
+                ((SimpleBurningBlock) block).doLifeCycleTick(level, pos, state, burningLightBlockEntity);
             }
+        }
     }
 
-    public BurningLightBlockEntity(BlockPos pos, BlockState state)
+    public BurningLightBlockEntity(RegistryObject<BlockEntityType<BurningLightBlockEntity>> burningBlockEntityType, BlockPos pos, BlockState state)
     {
-        super(BlockRegistry.BURNING_LIGHT_BLOCK_ENTITY.get(), pos, state);
+        super(burningBlockEntityType.get(), pos, state);
     }
 
     @ParametersAreNonnullByDefault
@@ -83,31 +85,34 @@ public class BurningLightBlockEntity extends BlockEntity
         setChanged();
     }
 
-    private void handleRain(Level level, BlockPos pos, BlockState state)
+    public void handleRain(ForgeConfigSpec.BooleanValue rainExtinguishes, ForgeConfigSpec.IntValue rainUpdateRate, Level level, BlockPos pos, BlockState state)
     {
-        if (level.isRainingAt(pos))
-            rainTimer++;
-
-        // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-        if (rainTimer > BurningTorchConfig.GENERAL.rainUpdateRate.get() && BurningTorchConfig.GENERAL.shouldRainExtinguish.get())
+        if (rainExtinguishes.get())
         {
-            if (level.isRaining() && level.canSeeSky(worldPosition))
+            if (level.isRainingAt(pos))
+                rainTimer++;
+
+            // Timer is measuring in ticks! There are 20 ticks in a second!!!!
+            if (rainTimer > rainUpdateRate.get())
             {
-                level.setBlockAndUpdate(pos, state
-                        .setValue(BlockStateProperties.LIT, false));
-                rainTimer = 0;
+                if (level.isRaining() && level.canSeeSky(worldPosition))
+                {
+                    level.setBlockAndUpdate(pos, state
+                            .setValue(BlockStateProperties.LIT, false));
+                    rainTimer = 0;
+                }
             }
         }
     }
 
-    private void decayBlock(Level level, BlockPos pos, BlockState state)
+    public void decayBlock(ForgeConfigSpec.IntValue decayRate, Level level, BlockPos pos, BlockState state)
     {
         if (state.getValue(Util.DECAY) > 0)
         {
             decayTimer++;
 
             // Timer is measuring in ticks! There are 20 ticks in a second!!!!
-            if (decayTimer > BurningTorchConfig.GENERAL.decayRate.get())
+            if (decayTimer > decayRate.get())
             {
                 if (state.getValue(Util.DECAY) > 0)
                 {
@@ -119,53 +124,62 @@ public class BurningLightBlockEntity extends BlockEntity
         else if (state.getValue(Util.DECAY) == 0)
         {
             level.removeBlockEntity(pos);
-            level.removeBlock(pos, false);
-        }
-        else
-        {
-            level.removeBlockEntity(pos);
+
+            BlockState replacementBlock = ((SimpleBurningBlock) state.getBlock()).getExpiredBlockStateReplacement();
+
+            if (replacementBlock.hasProperty(BlockStateProperties.FACING))
+                level.setBlockAndUpdate(pos, replacementBlock.setValue(BlockStateProperties.FACING, state.getValue(BlockStateProperties.FACING)));
+            else if (replacementBlock.hasProperty(BlockStateProperties.HORIZONTAL_FACING))
+                level.setBlockAndUpdate(pos, replacementBlock.setValue(BlockStateProperties.HORIZONTAL_FACING, state.getValue(BlockStateProperties.FACING)));
+            else
+                level.setBlockAndUpdate(pos, replacementBlock);
         }
     }
 
-    private void startFires(Level level, BlockPos pos, BlockState state)
+    @SuppressWarnings("deprecation")
+    public void startFires(ForgeConfigSpec.IntValue percentForFire, ForgeConfigSpec.IntValue delayBetweenFire, Level level, BlockPos pos, BlockState state)
     {
-        Random random = new Random();
-        BlockPos firePos = pos;
+        int fireStartPercent = percentForFire.get();
 
-        // Check the game rules for fire ticks.
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK))
+        // Only try to start fires if fire tick is on and the chance to start a fire is greater than 0.
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && fireStartPercent > 0)
         {
-            // Make sure the area is loaded.
-            if (!level.isAreaLoaded(firePos, 2) && state.getValue(BlockStateProperties.LIT) && BurningTorchConfig.GENERAL.torchesStartFireWhenLit.get())
-                return;
-
-            // Random int
-            int randomInt = random.nextInt(101);
-            // Count ticks.
-            tickCounter++;
-
-            // if the random int is greater than the config.
-            if (randomInt < BurningTorchConfig.GENERAL.percentToStartFire.get() && tickCounter == BurningTorchConfig.GENERAL.delayBetweenFire.get())
+            // Then make sure the cool down has elapsed.
+            if (tickCounter > delayBetweenFire.get())
             {
-                // find a random spot.
-                firePos = firePos.offset(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
+                Random random = level.random;
+                BlockPos firePos = pos;
 
-                BlockState fireState = BaseFireBlock.getState(level, pos);
+                // Make sure the area is loaded.
+                if (!level.isAreaLoaded(firePos, 2) && state.getValue(BlockStateProperties.LIT))
+                    return;
 
-                if (firePos.getY() >= 0 && firePos.getY() < level.getHeight())
+                // Random chance for the fire to be spawned.
+                int randomInt = random.nextInt(101);
+
+                // Check our chance to start a fire.
+                if (randomInt > fireStartPercent)
                 {
-                    // Check the space around us for a burnable block.
-                    if (Util.isSurroundingBlockFlammable(level, firePos))
+                    // Find a spot around the block in a 3 wide by 3 long 2 tall cube centered on the torch. 3 - 1 is required for the negative direction.
+                    firePos = firePos.offset(random.nextInt(3) - 1, random.nextInt(1), random.nextInt(3) - 1);
+
+                    if (level.isInWorldBounds(firePos))
                     {
-                        if (fireState.canSurvive(level, firePos))
+                        // Check the space around us for a burnable block.
+                        if (Util.isSurroundingBlockFlammable(level, firePos))
                         {
-                            // set it on fire.
-                            level.setBlock(firePos, fireState, 11);
+                            BlockState fireState = BaseFireBlock.getState(level, pos);
+                            if (fireState.canSurvive(level, firePos))
+                            {
+                                // set it on fire.
+                                level.setBlock(firePos, fireState, 11);
+                            }
                         }
                     }
+                    tickCounter = 0;
                 }
-                tickCounter = 0;
             }
+            else tickCounter++;
         }
     }
 }
