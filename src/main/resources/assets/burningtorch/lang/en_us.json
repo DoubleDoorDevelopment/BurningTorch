@@ -5,6 +5,7 @@
   "block.burningtorch.pumpkin": "Burning Pumpkin",
   "block.burningtorch.soot": "Soot",
   "item.burningtorch.charred_wood": "Charred Wood",
+  "item.burningtorch.soot": "Soot",
   "burningtorch.interact.shears.low": "You can't trim this further!",
   "burningTorch.config.llama.spitAtBlocks": "Allow llamas to spit at blocks in the #burningtorch:llama_spit_targets tag.",
   "burningTorch.config.llama.spitExtinguishesFirst": "Llama spit hitting a block with the \"LIT\" block state property will turn it off instead of breaking the block.",

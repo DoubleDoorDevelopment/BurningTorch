@@ -33,7 +33,6 @@ public class BurningLightBlockEntity extends BlockEntity
     {
         if (level != null && !level.isClientSide())
         {
-
             Block block = state.getBlock();
 
             if (state.getValue(BlockStateProperties.LIT) && block instanceof SimpleBurningBlock)
